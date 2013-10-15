@@ -20,6 +20,9 @@ class WC_Bling_Integration extends WC_Integration {
         $this->method_title       = __( 'Bling', 'wcbling' );
         $this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'wcbling' );
 
+        // API.
+        $this->api_url = 'https://www.bling.com.br/api2/pedido';
+
         // Load the settings.
         $this->init_form_fields();
         $this->init_settings();
@@ -30,6 +33,7 @@ class WC_Bling_Integration extends WC_Integration {
 
         // Actions.
         add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
+        add_action( 'add_meta_boxes', array( &$this, 'shop_order_metabox' ) );
 
         // Active logs.
         if ( 'yes' == $this->debug )
@@ -62,5 +66,211 @@ class WC_Bling_Integration extends WC_Integration {
                 'description' => sprintf( __( 'Log Bling events, such as API requests, inside %s', 'wcbling' ), '<code>woocommerce/logs/bling-' . sanitize_file_name( wp_hash( 'bling' ) ) . '.txt</code>' )
             )
         );
+    }
+
+    /**
+     * Format Zip Code.
+     *
+     * @param  string $zipcode Zip Code.
+     *
+     * @return string          Formated zip code.
+     */
+    protected function format_zipcode( $zipcode ) {
+        $zipcode = str_replace( array( '.', '-', ',' ), '', trim( $zipcode ) );
+        $len     = strlen( $zipcode );
+
+        if ( 8 == $len ) {
+            $str_1 = substr( $zipcode, 0, 2 );
+            $str_2 = substr( $zipcode, 2, 3 );
+            $str_3 = substr( $zipcode, 5, 3 );
+
+            return $str_1 . '.' . $str_2 . '-' . $str_2;
+        }
+
+        return false;
+    }
+
+    /**
+     * Generate the Bling order xml.
+     *
+     * @param object  $order Order data.
+     *
+     * @return string        Order xml.
+     */
+    protected function generate_order_xml( $order ) {
+        // Creates the payment xml.
+        $xml = new WC_Bling_SimpleXML( '<?xml version="1.0" encoding="utf-8"?><pedido></pedido>' );
+
+        // Order data.
+        $xml->addChild( 'data', date( 'd/m/Y', strtotime( $order->order_date ) ) );
+        $xml->addChild( 'numero', ltrim( $order->get_order_number(), '#' ) );
+
+        // Client.
+        $client = $xml->addChild( 'cliente' );
+        $client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
+        // $client->addChild( 'tipoPessoa', '' );
+        // $client->addChild( 'cpf_cnpj', '' );
+        // $client->addChild( 'ie', '' );
+        // $client->addChild( 'rg', '' );
+        $client->addChild( 'endereco' )->addCData( $order->billing_address_1 );
+        // $client->addChild( 'numero', '' );
+        if ( ! empty( $order->billing_address_2 ) )
+            $address->addChild( 'complemento' )->addCData( $order->billing_address_2 );
+        // $client->addChild( 'bairro', '' );
+        $cep = $this->format_zipcode( $order->billing_postcode );
+        if ( $cep )
+            $client->addChild( 'cep', $cep );
+        $client->addChild( 'cidade' )->addCData( $order->billing_city );
+        $client->addChild( 'uf', $order->billing_state );
+        $client->addChild( 'fone', $order->billing_phone );
+        $client->addChild( 'email', $order->billing_email );
+
+        // Shipping.
+        if ( $order->get_shipping() ) {
+            $shipping = $xml->addChild( 'transporte' );
+            $shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
+            $shipping->addChild( 'tipo_frete', 'R' );
+            // $shipping->addChild( 'servico_correios', '' );
+
+            if ( ( $order->get_shipping() + $order->get_shipping_tax() ) > 0 )
+                $xml->addChild( 'vlr_frete', number_format( $order->get_shipping() + $order->get_shipping_tax(), 2, '.', '' ) );
+        }
+
+        // Discount.
+        if ( $order->get_order_discount() > 0 )
+            $xml->addChild( 'vlr_desconto', $order->get_order_discount() );
+
+        // Items.
+        $items = $xml->addChild( 'itens' );
+
+        // Cart Contents.
+        if ( sizeof( $order->get_items() ) > 0 ) {
+            foreach ( $order->get_items() as $order_item ) {
+                if ( $order_item['qty'] ) {
+                    $item_name = $order_item['name'];
+
+                    // Get product data.
+                    $product = $order->get_product_from_item( $order_item );
+
+                    // Product with attrs.
+                    $item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
+                    if ( $meta = $item_meta->display( true, true ) )
+                        $item_name .= ' - ' . $meta;
+
+                    // Item data.
+                    $item = $items->addChild( 'item' );
+                    if ( $product->get_sku() )
+                        $item->addChild( 'codigo', $product->get_sku() );
+                    $item->addChild( 'descricao' )->addCData( sanitize_text_field( $item_name ) );
+                    $item->addChild( 'un', 'un' );
+                    $item->addChild( 'qtde', $order_item['qty'] );
+                    $item->addChild( 'vlr_unit', $order->get_item_total( $order_item, false ) );
+                }
+            }
+        }
+
+        // Extras Amount.
+        if ( $order->get_total_tax() > 0 ) {
+            $item = $items->addChild( 'item' );
+            $item->addChild( 'descricao' )->addCData( __( 'Tax', 'wcbling' ) );
+            $item->addChild( 'un', 'un' );
+            $item->addChild( 'qtde', 1 );
+            $item->addChild( 'vlr_unit', $order->get_total_tax() );
+        }
+
+        // Customer notes.
+        if ( $order->customer_note )
+            $xml->addChild( 'obs' )->addCData( sanitize_text_field( $order->customer_note ) );
+
+        // Filter the XML.
+        $xml = apply_filters( 'woocommerce_bling_order_xml', $xml, $order );
+
+        return $xml->asXML();
+    }
+
+    protected function submit_order( $order ) {
+        global $woocommerce;
+
+        // Sets the xml.
+        $xml = $this->generate_order_xml( $order );
+
+        // Sets the url.
+        $url = esc_url_raw( sprintf(
+            "%s?apiKey=%s&pedidoXML=%s",
+            $this->api_url,
+            $this->access_key,
+            urlencode( $xml )
+        ) );
+
+        if ( 'yes' == $this->debug )
+            $this->log->add( 'bling', 'Submitting order ' . $order->get_order_number() . ' with the following data: ' . $xml );
+
+        // Get the response.
+        $response = wp_remote_post( $url, array( 'timeout' => 60 ) );
+
+        // Process the response.
+        if ( is_wp_error( $response ) ) {
+            if ( 'yes' == $this->debug )
+                $this->log->add( 'bling', 'An error occurred with WP_Error: ' . $response->get_error_message() );
+        } else {
+            try {
+                $body = new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+            } catch ( Exception $e ) {
+                $body = '';
+
+                if ( 'yes' == $this->debug )
+                    $this->log->add( 'bling', 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
+            }
+
+            // Save the order number.
+            if ( isset( $body->numero ) ) {
+                $number = (string) $body->numero;
+
+                update_post_meta( $order->id, __( 'Bling order number', 'wcbling' ), $number );
+
+                if ( 'yes' == $this->debug )
+                    $this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
+            }
+
+            // Save the order error.
+            if ( isset( $body->erros ) ) {
+                $errors = array();
+                foreach ( $body->erros as $error )
+                    $errors[] = (string) $error->erro->msg;
+
+                update_post_meta( $order->id, __( 'Bling error', 'wcbling' ), implode( ', ', $errors ) );
+
+                if ( 'yes' == $this->debug )
+                    $this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $body->erros, true ) );
+            }
+
+        }
+    }
+
+    /**
+     * Register the shop_order Bling metabox.
+     *
+     * @return void
+     */
+    public function shop_order_metabox() {
+        add_meta_box(
+            'wcbling',
+            __( 'Bling', 'wcbling' ),
+            array( &$this, 'metabox_content' ),
+            'shop_order',
+            'side',
+            'default'
+        );
+    }
+
+    /**
+     * Bling metabox content.
+     *
+     * @param  object $post order_shop data.
+     *
+     * @return string       Metabox HTML.
+     */
+    public function metabox_content( $post ) {
+
     }
 }
