@@ -42,7 +42,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 = Configuração do plugin: =
 
-Coming soon!
+* Coming soon!
 
 == Frequently Asked Questions ==
 
@@ -63,7 +63,7 @@ Este plugin esta licenciado como GPL.
 
 == Screenshots ==
 
-Coming soon!
+1. Coming soon!
 
 == Changelog ==
 

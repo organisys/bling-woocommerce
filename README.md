@@ -1,5 +1,5 @@
 # Bling WooCommerce #
-**Contributors:** claudiosanches  
+**Contributors:** bling, claudiosanches  
 **Tags:** management, stock, finances, ERP, NFe  
 **Requires at least:** 3.5  
 **Tested up to:** 3.6.1  
@@ -42,9 +42,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 ### Configuração do plugin: ###
 
-### Coming soon! ###
-![Coming soon!](http://s.wordpress.org/extend/plugins/bling-woocommerce/screenshot-1.png)
-
+* Coming soon!
 
 ## Frequently Asked Questions ##
 
@@ -65,8 +63,8 @@ Este plugin esta licenciado como GPL.
 
 ## Screenshots ##
 
-### Coming soon! ###
-![Coming soon!](http://s.wordpress.org/extend/plugins/bling-woocommerce/screenshot-1.png)
+### 1. Coming soon! ###
+![1. Coming soon!](http://s.wordpress.org/extend/plugins/bling-woocommerce/screenshot-1.png)
 
 
 ## Changelog ##
