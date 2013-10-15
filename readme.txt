@@ -1,5 +1,5 @@
 === Bling WooCommerce ===
-Contributors: claudiosanches
+Contributors: bling, claudiosanches
 Tags: management, stock, finances, ERP, NFe
 Requires at least: 3.5
 Tested up to: 3.6.1
