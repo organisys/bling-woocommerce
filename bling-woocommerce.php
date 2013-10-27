@@ -7,7 +7,7 @@
  * Author URI: http://bling.com.br/
  * Version: 1.0.0
  * License: GPLv2 or later
- * Text Domain: wcbling
+ * Text Domain: bling-woocommerce
  * Domain Path: /languages/
  */
 
@@ -18,7 +18,7 @@ define( 'WOO_BLING_URL', plugin_dir_url( __FILE__ ) );
  * WooCommerce fallback notice.
  */
 function wcbling_woocommerce_fallback_notice() {
-    echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'wcbling' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>' ) . '</p></div>';
+    echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>' ) . '</p></div>';
 }
 
 /**
@@ -36,7 +36,7 @@ function wcbling_gateway_load() {
     /**
      * Load textdomain.
      */
-    load_plugin_textdomain( 'wcbling', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    load_plugin_textdomain( 'bling-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
     /**
      * Add a new integration to WooCommerce.
@@ -73,7 +73,7 @@ function wcbling_action_links( $links ) {
         'settings' => sprintf(
             '<a href="%s">%s</a>',
             admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' ),
-            __( 'Settings', 'wcbling' )
+            __( 'Settings', 'bling-woocommerce' )
         )
     );
 

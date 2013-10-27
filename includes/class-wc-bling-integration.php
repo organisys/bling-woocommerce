@@ -17,8 +17,8 @@ class WC_Bling_Integration extends WC_Integration {
         global $woocommerce;
 
         $this->id                 = 'bling';
-        $this->method_title       = __( 'Bling', 'wcbling' );
-        $this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'wcbling' );
+        $this->method_title       = __( 'Bling', 'bling-woocommerce' );
+        $this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'bling-woocommerce' );
 
         // API.
         $this->api_url = 'https://www.bling.com.br/api2/pedido';
@@ -48,22 +48,22 @@ class WC_Bling_Integration extends WC_Integration {
     public function init_form_fields() {
         $this->form_fields = array(
             'access_key' => array(
-                'title'       => __( 'Access Key', 'wcbling' ),
+                'title'       => __( 'Access Key', 'bling-woocommerce' ),
                 'type'        => 'text',
-                'description' => sprintf( __( 'Please enter your Bling Access Key. This is needed to integration works. Is possible generate a new Access Key %s.', 'wcbling' ), '<a href="http://bling.com.br/configuracoes.api.web.services.php">' . __( 'here', 'wcbling' ) . '</a>' ),
+                'description' => sprintf( __( 'Please enter your Bling Access Key. This is needed to integration works. Is possible generate a new Access Key %s.', 'bling-woocommerce' ), '<a href="http://bling.com.br/configuracoes.api.web.services.php">' . __( 'here', 'bling-woocommerce' ) . '</a>' ),
                 'default'     => ''
             ),
             'testing' => array(
-                'title'       => __( 'Testing', 'wcbling' ),
+                'title'       => __( 'Testing', 'bling-woocommerce' ),
                 'type'        => 'title',
                 'description' => ''
             ),
             'debug' => array(
-                'title'       => __( 'Debug Log', 'wcbling' ),
+                'title'       => __( 'Debug Log', 'bling-woocommerce' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'Enable logging', 'wcbling' ),
+                'label'       => __( 'Enable logging', 'bling-woocommerce' ),
                 'default'     => 'no',
-                'description' => sprintf( __( 'Log Bling events, such as API requests, inside %s', 'wcbling' ), '<code>woocommerce/logs/bling-' . sanitize_file_name( wp_hash( 'bling' ) ) . '.txt</code>' )
+                'description' => sprintf( __( 'Log Bling events, such as API requests, inside %s', 'bling-woocommerce' ), '<code>woocommerce/logs/bling-' . sanitize_file_name( wp_hash( 'bling' ) ) . '.txt</code>' )
             )
         );
     }
@@ -172,7 +172,7 @@ class WC_Bling_Integration extends WC_Integration {
         // Extras Amount.
         if ( $order->get_total_tax() > 0 ) {
             $item = $items->addChild( 'item' );
-            $item->addChild( 'descricao' )->addCData( __( 'Tax', 'wcbling' ) );
+            $item->addChild( 'descricao' )->addCData( __( 'Tax', 'bling-woocommerce' ) );
             $item->addChild( 'un', 'un' );
             $item->addChild( 'qtde', 1 );
             $item->addChild( 'vlr_unit', $order->get_total_tax() );
@@ -226,7 +226,7 @@ class WC_Bling_Integration extends WC_Integration {
             if ( isset( $body->numero ) ) {
                 $number = (string) $body->numero;
 
-                update_post_meta( $order->id, __( 'Bling order number', 'wcbling' ), $number );
+                update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
 
                 if ( 'yes' == $this->debug )
                     $this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
@@ -238,7 +238,7 @@ class WC_Bling_Integration extends WC_Integration {
                 foreach ( $body->erros as $error )
                     $errors[] = (string) $error->erro->msg;
 
-                update_post_meta( $order->id, __( 'Bling error', 'wcbling' ), implode( ', ', $errors ) );
+                update_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ), implode( ', ', $errors ) );
 
                 if ( 'yes' == $this->debug )
                     $this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $body->erros, true ) );
@@ -254,8 +254,8 @@ class WC_Bling_Integration extends WC_Integration {
      */
     public function shop_order_metabox() {
         add_meta_box(
-            'wcbling',
-            __( 'Bling', 'wcbling' ),
+            'bling-woocommerce',
+            __( 'Bling', 'bling-woocommerce' ),
             array( &$this, 'metabox_content' ),
             'shop_order',
             'side',
