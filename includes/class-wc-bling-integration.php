@@ -34,7 +34,8 @@ class WC_Bling_Integration extends WC_Integration {
         // Actions.
         add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
         add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
-        add_action( 'add_meta_boxes', array( $this, 'shop_order_metabox' ) );
+        add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
+        add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
 
         // Active logs.
         if ( 'yes' == $this->debug )
@@ -189,7 +190,14 @@ class WC_Bling_Integration extends WC_Integration {
         return $xml->asXML();
     }
 
-    protected function submit_order( $order ) {
+    /**
+     * Submit the order to Bling.
+     *
+     * @param  object $order WC_Order object.
+     *
+     * @return void
+     */
+    public function submit_order( $order ) {
         global $woocommerce;
 
         // Sets the xml.
@@ -228,6 +236,7 @@ class WC_Bling_Integration extends WC_Integration {
                 $number = (string) $body->numero;
 
                 update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
+                delete_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ) );
 
                 if ( 'yes' == $this->debug )
                     $this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
@@ -261,29 +270,15 @@ class WC_Bling_Integration extends WC_Integration {
     }
 
     /**
-     * Register the shop_order Bling metabox.
+     * Add "Send order to the Bling" order action.
      *
-     * @return void
+     * @param  array $actions Order actions.
+     *
+     * @return array          New Bling order action.
      */
-    public function shop_order_metabox() {
-        add_meta_box(
-            'bling-woocommerce',
-            __( 'Bling', 'bling-woocommerce' ),
-            array( $this, 'metabox_content' ),
-            'shop_order',
-            'side',
-            'default'
-        );
-    }
+    public function order_action( $actions ) {
+        $actions['bling_sync'] = __( 'Send order to hte Bling', 'bling-woocommerce' );
 
-    /**
-     * Bling metabox content.
-     *
-     * @param  object $post order_shop data.
-     *
-     * @return string       Metabox HTML.
-     */
-    public function metabox_content( $post ) {
-
+        return $actions;
     }
 }
