@@ -11,7 +11,17 @@ O Bling é um sistema online que permite a você controlar as finanças, estoque
 
 == Description ==
 
+### Description (en): ###
+
+The Bling is an online system that integrates several tools that can assist in solving the major problems in managing a small business.
+Works only with Real and address in Brazil.
+Learn more making a [Tour the Bling](http://www.bling.com.br/home.php?p=tour).
+
+### Descrição (pt_BR): ###
+
 O Bling é um sistema online que integra diversas ferramentas que podem auxiliar na solução dos principais problemas de gestão em uma pequena empresa.
+Funciona apenas com Real e com endereço no Brasil.
+Saiba mais fazendo uma [Tour no Bling](http://www.bling.com.br/home.php?p=tour).
 
 = Instalação: =
 
@@ -31,30 +41,64 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Installation ==
 
-* Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress.
-* Ative o plugin.
+### Instalation guid (en): ###
 
-= Requerimentos: =
+= Install =
 
-* Possuir uma conta no [Bling](http://bling.com.br/);
-* Gerar uma **Chave de Acesso** em [Bling - API Para Web Services](http://bling.com.br/configuracoes.api.web.services.php);
-* Ter instalado o plugin [WooCommerce](http://wordpress.org/plugins/woocommerce/).
+* Upload the plugin to the wp-content/plugins folder, or install using the WordPress plugin installer;
+* Activate the plugin.
 
-= Configuração do plugin: =
+= Bling Configuration =
 
-* Coming soon!
+* Create an account on [Bling](http://bling.com.br/);
+* Generate an **Access Key** on [Bling - API Para Web Services](http://bling.com.br/configuracoes.api.web.services.php).
+
+= Plugin Configuration =
+
+* In WordPress admin site go to **WooCommerce > Settings > Integration > Bling**;
+* Fill out the option **Access Key** and activate the Bling.
+
+### Guia de instalação (pt_BR): ###
+
+= Instalação =
+
+* Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress;
+* Ative o plugin;
+
+= Configuração do Bling =
+
+* Crie uma conta no [Bling](http://bling.com.br/);
+* Gerar uma **Chave de Acesso** em [Bling - API Para Web Services](http://bling.com.br/configuracoes.api.web.services.php).
+
+= Configuração do plugin =
+
+* No administrador do site WordPress vá até **WooCommerce > Configurações > Integrações > Bling**;
+* Preencha a opção **Chave de Acesso** e ative o Bling.
 
 == Frequently Asked Questions ==
 
-= Qual é a licença do plugin? =
+### FAQ (en): ###
 
-Este plugin esta licenciado como GPL.
+= What do I need to use this plugin? =
+
+* Have installed the [WooCommerce](http://wordpress.org/plugins/woocommerce/) plugin.
+* Owning an account on [Bling](http://bling.com.br/).
+* Generate an **[Access Key](http://bling.com.br/configuracoes.api.web.services.php)** in Bling;
+* Configure your store to receive payments in Brazilian Real and only from Brazil.
+
+= How work the Bling? =
+
+* Learn more [Sobre o Bling](http://bling.com.br/home.php?p=tour).
+* Or go to [FAQ do Bling](http://bling.com.br/faq.php).
+
+### FAQ (pt_BR): ###
 
 = O que eu preciso para utilizar este plugin? =
 
 * Ter instalado o plugin [WooCommerce](http://wordpress.org/plugins/woocommerce/).
 * Possuir uma conta no [Bling](http://bling.com.br/).
 * Gerar uma **[Chave de Acesso](http://bling.com.br/configuracoes.api.web.services.php)** no Bling;
+* Configurar sua loja para receber em Real e pagamentos apenas vindos do Brasil.
 
 = Como funciona o Bling? =
 
@@ -63,19 +107,19 @@ Este plugin esta licenciado como GPL.
 
 == Screenshots ==
 
-1. Coming soon!
+1. Plugin Settings.
 
 == Changelog ==
 
 = 1.0.0 =
 
-* Primeira versão.
+* Initial release.
 
 == Upgrade Notice ==
 
 = 1.0.0 =
 
-* Primeira versão.
+* Initial release.
 
 == License ==
 
