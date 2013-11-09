@@ -18,7 +18,7 @@ define( 'WOO_BLING_URL', plugin_dir_url( __FILE__ ) );
  * WooCommerce fallback notice.
  */
 function wcbling_woocommerce_fallback_notice() {
-    echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>' ) . '</p></div>';
+    echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
 }
 
 /**
