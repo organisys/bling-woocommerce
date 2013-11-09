@@ -33,7 +33,8 @@ class WC_Bling_Integration extends WC_Integration {
 
         // Actions.
         add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
-        add_action( 'add_meta_boxes', array( &$this, 'shop_order_metabox' ) );
+        add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
+        add_action( 'add_meta_boxes', array( $this, 'shop_order_metabox' ) );
 
         // Active logs.
         if ( 'yes' == $this->debug )
@@ -243,8 +244,20 @@ class WC_Bling_Integration extends WC_Integration {
                 if ( 'yes' == $this->debug )
                     $this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $body->erros, true ) );
             }
-
         }
+    }
+
+    /**
+     * Process order and submit to Bling.
+     *
+     * @param int $order_id Order ID.
+     *
+     * @return void
+     */
+    public function process_order( $order_id ) {
+        $order = new WC_Order( $order_id );
+
+        $this->submit_order( $order );
     }
 
     /**
@@ -256,7 +269,7 @@ class WC_Bling_Integration extends WC_Integration {
         add_meta_box(
             'bling-woocommerce',
             __( 'Bling', 'bling-woocommerce' ),
-            array( &$this, 'metabox_content' ),
+            array( $this, 'metabox_content' ),
             'shop_order',
             'side',
             'default'
