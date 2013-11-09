@@ -1,0 +1,102 @@
+# Copyright (C) 2013 Bling WooCommerce
+# This file is distributed under the same license as the Bling WooCommerce package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bling WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/bling-woocommerce\n"
+"POT-Creation-Date: 2013-11-09 18:59:41+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: bling-woocommerce.php:21
+msgid "Bling WooCommerce depends on the last version of %s to work!"
+msgstr ""
+
+#: bling-woocommerce.php:21
+msgid "WooCommerce"
+msgstr ""
+
+#: bling-woocommerce.php:76
+msgid "Settings"
+msgstr ""
+
+#. #-#-#-#-#  bling-woocommerce.pot (Bling WooCommerce 1.0.0)  #-#-#-#-#
+#. Author of the plugin/theme
+#: includes/class-wc-bling-integration.php:20
+msgid "Bling"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:21
+msgid ""
+"The Bling is an online system that allows you to control the finances, "
+"inventory and issue invoices quickly and uncomplicated."
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:53
+msgid "Access Key"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:55
+msgid ""
+"Please enter your Bling Access Key. This is needed to integration works. Is "
+"possible generate a new Access Key %s."
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:55
+msgid "here"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:59
+msgid "Testing"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:64
+msgid "Debug Log"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:66
+msgid "Enable logging"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:68
+msgid "Log Bling events, such as API requests, inside %s"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:177
+msgid "Tax"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:238
+msgid "Bling order number"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:239
+#: includes/class-wc-bling-integration.php:251
+msgid "Bling error"
+msgstr ""
+
+#: includes/class-wc-bling-integration.php:280
+msgid "Send order to hte Bling"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Bling WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/organisys/bling-woocommerce"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"O Bling é um sistema online que permite a você controlar as finanças, "
+"estoques e emitir notas fiscais de maneira rápida e descomplicada."
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://bling.com.br/"
+msgstr ""
