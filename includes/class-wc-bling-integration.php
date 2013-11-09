@@ -277,7 +277,7 @@ class WC_Bling_Integration extends WC_Integration {
      * @return array          New Bling order action.
      */
     public function order_action( $actions ) {
-        $actions['bling_sync'] = __( 'Send order to hte Bling', 'bling-woocommerce' );
+        $actions['bling_sync'] = __( 'Send order to the Bling', 'bling-woocommerce' );
 
         return $actions;
     }
