@@ -118,7 +118,7 @@ class WC_Bling_Integration extends WC_Integration {
 		$client->addChild( 'endereco' )->addCData( $order->billing_address_1 );
 		// $client->addChild( 'numero', '' );
 		if ( ! empty( $order->billing_address_2 ) ) {
-			$address->addChild( 'complemento' )->addCData( $order->billing_address_2 );
+			$client->addChild( 'complemento' )->addCData( $order->billing_address_2 );
 		}
 		// $client->addChild( 'bairro', '' );
 		$cep = $this->format_zipcode( $order->billing_postcode );
