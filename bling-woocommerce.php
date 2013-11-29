@@ -18,7 +18,7 @@ define( 'WOO_BLING_URL', plugin_dir_url( __FILE__ ) );
  * WooCommerce fallback notice.
  */
 function wcbling_woocommerce_fallback_notice() {
-    echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
+	echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
 }
 
 /**
@@ -26,36 +26,36 @@ function wcbling_woocommerce_fallback_notice() {
  */
 function wcbling_gateway_load() {
 
-    // Checks with WooCommerce is installed.
-    if ( ! class_exists( 'WC_Integration' ) ) {
-        add_action( 'admin_notices', 'wcbling_woocommerce_fallback_notice' );
+	// Checks with WooCommerce is installed.
+	if ( ! class_exists( 'WC_Integration' ) ) {
+		add_action( 'admin_notices', 'wcbling_woocommerce_fallback_notice' );
 
-        return;
-    }
+		return;
+	}
 
-    /**
-     * Load textdomain.
-     */
-    load_plugin_textdomain( 'bling-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	/**
+	 * Load textdomain.
+	 */
+	load_plugin_textdomain( 'bling-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-    /**
-     * Add a new integration to WooCommerce.
-     *
-     * @param  array $integrations WooCommerce payment methods.
-     *
-     * @return array               Payment methods with PagSeguro.
-     */
-    function wcbling_add_integration( $integrations ) {
-        $integrations[] = 'WC_Bling_Integration';
+	/**
+	 * Add a new integration to WooCommerce.
+	 *
+	 * @param  array $integrations WooCommerce payment methods.
+	 *
+	 * @return array               Payment methods with PagSeguro.
+	 */
+	function wcbling_add_integration( $integrations ) {
+		$integrations[] = 'WC_Bling_Integration';
 
-        return $integrations;
-    }
+		return $integrations;
+	}
 
-    add_filter( 'woocommerce_integrations', 'wcbling_add_integration' );
+	add_filter( 'woocommerce_integrations', 'wcbling_add_integration' );
 
-    // Include the Bling classes.
-    require_once WOO_BLING_PATH . 'includes/class-wc-bling-simplexml.php';
-    require_once WOO_BLING_PATH . 'includes/class-wc-bling-integration.php';
+	// Include the Bling classes.
+	require_once WOO_BLING_PATH . 'includes/class-wc-bling-simplexml.php';
+	require_once WOO_BLING_PATH . 'includes/class-wc-bling-integration.php';
 }
 
 add_action( 'plugins_loaded', 'wcbling_gateway_load', 0 );
@@ -69,15 +69,15 @@ add_action( 'plugins_loaded', 'wcbling_gateway_load', 0 );
  */
 function wcbling_action_links( $links ) {
 
-    $settings = array(
-        'settings' => sprintf(
-            '<a href="%s">%s</a>',
-            admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' ),
-            __( 'Settings', 'bling-woocommerce' )
-        )
-    );
+	$settings = array(
+		'settings' => sprintf(
+			'<a href="%s">%s</a>',
+			admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' ),
+			__( 'Settings', 'bling-woocommerce' )
+		)
+	);
 
-    return array_merge( $settings, $links );
+	return array_merge( $settings, $links );
 }
 
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wcbling_action_links' );
