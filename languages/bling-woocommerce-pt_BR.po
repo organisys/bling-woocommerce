@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Bling WooCommerce v1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-11-09 19:06:51+0000\n"
+"PO-Revision-Date: 2014-02-07 03:31:20+0000\n"
 "Last-Translator: Claudio Sanches <contato@claudiosmweb.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,7 @@ msgstr "https://github.com/organisys/bling-woocommerce"
 #. translators: plugin header field 'Author'
 #: bling-woocommerce.php:0
 #: includes/class-wc-bling-integration.php:20
+#: includes/class-wc-bling-integration.php:322
 #@ bling-woocommerce
 msgid "Bling"
 msgstr "Bling"
@@ -51,18 +52,18 @@ msgstr "http://bling.com.br/"
 msgid "1.0.0"
 msgstr "1.0.0"
 
-#: bling-woocommerce.php:21
+#: bling-woocommerce.php:18
 #, php-format
 #@ bling-woocommerce
 msgid "Bling WooCommerce depends on the last version of %s to work!"
 msgstr "Bling WooCommerce depende da última versão do %s para funcionar!"
 
-#: bling-woocommerce.php:21
+#: bling-woocommerce.php:18
 #@ bling-woocommerce
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: bling-woocommerce.php:76
+#: bling-woocommerce.php:41
 #@ bling-woocommerce
 msgid "Settings"
 msgstr "Configurações"
@@ -72,58 +73,52 @@ msgstr "Configurações"
 msgid "The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated."
 msgstr "O Bling é um sistema online que permite a você controlar as finanças, estoques e emitir notas fiscais de maneira rápida e descomplicada."
 
-#: includes/class-wc-bling-integration.php:53
+#: includes/class-wc-bling-integration.php:61
 #@ bling-woocommerce
 msgid "Access Key"
 msgstr "Chave de Acesso"
 
-#: includes/class-wc-bling-integration.php:55
+#: includes/class-wc-bling-integration.php:63
 #, php-format
 #@ bling-woocommerce
 msgid "Please enter your Bling Access Key. This is needed to integration works. Is possible generate a new Access Key %s."
 msgstr "Por favor, digite sua Chave de Acesso do Bling. É necessário para a integração funcionar. É possível gerar uma nova Chave de Acesso %s."
 
-#: includes/class-wc-bling-integration.php:55
+#: includes/class-wc-bling-integration.php:63
 #@ bling-woocommerce
 msgid "here"
 msgstr "aqui"
 
-#: includes/class-wc-bling-integration.php:59
+#: includes/class-wc-bling-integration.php:67
 #@ bling-woocommerce
 msgid "Testing"
 msgstr "Teste"
 
-#: includes/class-wc-bling-integration.php:64
+#: includes/class-wc-bling-integration.php:72
 #@ bling-woocommerce
 msgid "Debug Log"
 msgstr "Log de depuração"
 
-#: includes/class-wc-bling-integration.php:66
+#: includes/class-wc-bling-integration.php:74
 #@ bling-woocommerce
 msgid "Enable logging"
 msgstr "Habilitar log"
 
-#: includes/class-wc-bling-integration.php:68
+#: includes/class-wc-bling-integration.php:76
 #, php-format
 #@ bling-woocommerce
 msgid "Log Bling events, such as API requests, inside %s"
 msgstr "Log sobre eventos do Bling, como requisições da API, dentro do arquivo %s"
 
-#: includes/class-wc-bling-integration.php:177
+#: includes/class-wc-bling-integration.php:194
 #@ bling-woocommerce
 msgid "Tax"
 msgstr "Taxa"
 
-#: includes/class-wc-bling-integration.php:238
+#: includes/class-wc-bling-integration.php:258
 #@ bling-woocommerce
 msgid "Bling order number"
 msgstr "Número de pedido no Bling"
-
-#: includes/class-wc-bling-integration.php:239
-#: includes/class-wc-bling-integration.php:251
-#@ bling-woocommerce
-msgid "Bling error"
-msgstr "Erro no Bling"
 
 #. translators: plugin header field 'Description'
 #: bling-woocommerce.php:0
@@ -131,8 +126,13 @@ msgstr "Erro no Bling"
 msgid "The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.."
 msgstr "O Bling é um sistema online que permite a você controlar as finanças, estoques e emitir notas fiscais de maneira rápida e descomplicada."
 
-#: includes/class-wc-bling-integration.php:280
+#: includes/class-wc-bling-integration.php:306
 #@ bling-woocommerce
 msgid "Send order to the Bling"
 msgstr "Enviar pedido ao Bling"
+
+#: includes/class-wc-bling-integration.php:261
+#@ bling-woocommerce
+msgid "Order sent successfully"
+msgstr "Pedido enviado com sucesso"
 

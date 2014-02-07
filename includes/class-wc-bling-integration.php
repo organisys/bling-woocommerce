@@ -37,6 +37,9 @@ class WC_Bling_Integration extends WC_Integration {
 		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
 		add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
 
+		// Display notices in shop order admin page.
+		add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
+
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
 			if ( class_exists( 'WC_Logger' ) ) {
@@ -251,8 +254,11 @@ class WC_Bling_Integration extends WC_Integration {
 			if ( isset( $response_data->retorno->numero ) ) {
 				$number = (string) $response_data->retorno->numero;
 
+				// Save the bling order number as order meta.
 				update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
-				delete_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ) );
+
+				// Sets the success notice.
+				update_post_meta( $order->id, '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
 
 				if ( 'yes' == $this->debug ) {
 					$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
@@ -266,7 +272,8 @@ class WC_Bling_Integration extends WC_Integration {
 					$errors[] = (string) $error->msg;
 				}
 
-				update_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ), implode( ', ', $errors ) );
+				// Sets the error notice.
+				update_post_meta( $order->id, '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
 
 				if ( 'yes' == $this->debug ) {
 					$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $response_data->retorno->erros, true ) );
@@ -299,5 +306,22 @@ class WC_Bling_Integration extends WC_Integration {
 		$actions['bling_sync'] = __( 'Send order to the Bling', 'bling-woocommerce' );
 
 		return $actions;
+	}
+
+	/**
+	 * Display notices in shop order admin page.
+	 *
+	 * @return string Bling notice.
+	 */
+	public function shop_order_notices() {
+		if ( 'shop_order' === get_current_screen()->id && isset( $_GET['post'] ) ) {
+			$order_id = intval( $_GET['post'] );
+			$message = get_post_meta( $order_id, '_bling_notices', true );
+
+			if ( is_array( $message ) ) {
+				echo '<div class="' . esc_attr( $message['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $message['message'] ) . '.</p></div>';
+				delete_post_meta( $order_id, '_bling_notices' );
+			}
+		}
 	}
 }
