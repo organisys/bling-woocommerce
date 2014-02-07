@@ -105,6 +105,9 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return string        Order xml.
 	 */
 	protected function generate_order_xml( $order ) {
+		// Added custom SimpleXML class.
+		require_once plugin_dir_path( __FILE__ ) . 'class-wc-bling-simplexml.php';
+
 		// Creates the payment xml.
 		$xml = new WC_Bling_SimpleXML( '<?xml version="1.0" encoding="utf-8"?><pedido></pedido>' );
 
