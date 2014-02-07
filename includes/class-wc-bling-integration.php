@@ -21,7 +21,7 @@ class WC_Bling_Integration extends WC_Integration {
 		$this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'bling-woocommerce' );
 
 		// API.
-		$this->api_url = 'https://www.bling.com.br/api2/pedido';
+		$this->api_url = 'https://bling.com.br/Api/v2/pedido/json/';
 
 		// Load the settings.
 		$this->init_form_fields();
@@ -118,7 +118,7 @@ class WC_Bling_Integration extends WC_Integration {
 		// Client.
 		$client = $xml->addChild( 'cliente' );
 		$client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
-		// $client->addChild( 'tipoPessoa', '' );
+		// $client->addChild( 'tipo_pessoa', '' );
 		// $client->addChild( 'cpf_cnpj', '' );
 		// $client->addChild( 'ie', '' );
 		// $client->addChild( 'rg', '' );
@@ -238,9 +238,9 @@ class WC_Bling_Integration extends WC_Integration {
 			}
 		} else {
 			try {
-				$body = new SimpleXmlElement( $response['body'], LIBXML_NOCDATA );
+				$response_data = json_decode( $response['body'] );
 			} catch ( Exception $e ) {
-				$body = '';
+				$response_data = '';
 
 				if ( 'yes' == $this->debug ) {
 					$this->log->add( 'bling', 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
@@ -248,8 +248,8 @@ class WC_Bling_Integration extends WC_Integration {
 			}
 
 			// Save the order number.
-			if ( isset( $body->numero ) ) {
-				$number = (string) $body->numero;
+			if ( isset( $response_data->retorno->numero ) ) {
+				$number = (string) $response_data->retorno->numero;
 
 				update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
 				delete_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ) );
@@ -260,16 +260,16 @@ class WC_Bling_Integration extends WC_Integration {
 			}
 
 			// Save the order error.
-			if ( isset( $body->erros ) ) {
+			if ( isset( $response_data->retorno->erros ) ) {
 				$errors = array();
-				foreach ( $body->erros as $error ) {
-					$errors[] = (string) $error->erro->msg;
+				foreach ( $response_data->retorno->erros as $error ) {
+					$errors[] = (string) $error->msg;
 				}
 
 				update_post_meta( $order->id, __( 'Bling error', 'bling-woocommerce' ), implode( ', ', $errors ) );
 
 				if ( 'yes' == $this->debug ) {
-					$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $body->erros, true ) );
+					$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $response_data->retorno->erros, true ) );
 				}
 			}
 		}
