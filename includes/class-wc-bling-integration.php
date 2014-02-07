@@ -206,7 +206,7 @@ class WC_Bling_Integration extends WC_Integration {
 		}
 
 		// Customer notes.
-		if ( $order->customer_note && ! empty( $order->customer_note ) ) {
+		if ( isset( $order->customer_note ) && ! empty( $order->customer_note ) ) {
 			$xml->addChild( 'obs' )->addCData( sanitize_text_field( $order->customer_note ) );
 		}
 
