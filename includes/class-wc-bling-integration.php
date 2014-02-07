@@ -221,7 +221,7 @@ class WC_Bling_Integration extends WC_Integration {
 
 		// Sets the url.
 		$url = esc_url_raw( sprintf(
-			"%s?apiKey=%s&pedidoXML=%s",
+			"%s?apikey=%s&xml=%s",
 			$this->api_url,
 			$this->access_key,
 			urlencode( $xml )
@@ -250,9 +250,11 @@ class WC_Bling_Integration extends WC_Integration {
 				}
 			}
 
+			error_log( print_r( $response_data, true ) );
+
 			// Save the order number.
-			if ( isset( $response_data->retorno->numero ) ) {
-				$number = (string) $response_data->retorno->numero;
+			if ( isset( $response_data->retorno->pedidos[0]->pedido->numero ) ) {
+				$number = (string) $response_data->retorno->pedidos[0]->pedido->numero;
 
 				// Save the bling order number as order meta.
 				update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
@@ -269,7 +271,12 @@ class WC_Bling_Integration extends WC_Integration {
 			if ( isset( $response_data->retorno->erros ) ) {
 				$errors = array();
 				foreach ( $response_data->retorno->erros as $error ) {
-					$errors[] = (string) $error->msg;
+					if ( isset( $error->msg ) ) {
+						$errors[] = (string) $error->msg;
+					} else {
+						$msg = (array) $error;
+						$errors[] = (string) current( $msg );
+					}
 				}
 
 				// Sets the error notice.
