@@ -19,6 +19,33 @@ function wcbling_woocommerce_fallback_notice() {
 }
 
 /**
+ * Adds custom settings url in plugins page.
+ *
+ * @param  array $links Default links.
+ *
+ * @return array        Default links and settings link.
+ */
+function wcbling_action_links( $links ) {
+	global $woocommerce;
+
+	if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
+		$admin_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=bling' );
+	} else {
+		$admin_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' );
+	}
+
+	$settings = array(
+		'settings' => sprintf(
+			'<a href="%s">%s</a>',
+			$admin_url,
+			__( 'Settings', 'bling-woocommerce' )
+		)
+	);
+
+	return array_merge( $settings, $links );
+}
+
+/**
  * Load functions.
  */
 function wcbling_gateway_load() {
@@ -40,7 +67,7 @@ function wcbling_gateway_load() {
 	 *
 	 * @param  array $integrations WooCommerce payment methods.
 	 *
-	 * @return array               Payment methods with PagSeguro.
+	 * @return array               Payment methods with Bling.
 	 */
 	function wcbling_add_integration( $integrations ) {
 		$integrations[] = 'WC_Bling_Integration';
@@ -53,28 +80,10 @@ function wcbling_gateway_load() {
 	// Include the Bling classes.
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-simplexml.php';
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-integration.php';
+
+	if ( is_admin() ) {
+		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wcbling_action_links' );
+	}
 }
 
 add_action( 'plugins_loaded', 'wcbling_gateway_load', 0 );
-
-/**
- * Adds custom settings url in plugins page.
- *
- * @param  array $links Default links.
- *
- * @return array        Default links and settings link.
- */
-function wcbling_action_links( $links ) {
-
-	$settings = array(
-		'settings' => sprintf(
-			'<a href="%s">%s</a>',
-			admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' ),
-			__( 'Settings', 'bling-woocommerce' )
-		)
-	);
-
-	return array_merge( $settings, $links );
-}
-
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wcbling_action_links' );
