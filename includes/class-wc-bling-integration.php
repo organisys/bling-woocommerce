@@ -39,7 +39,11 @@ class WC_Bling_Integration extends WC_Integration {
 
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
-			$this->log = $woocommerce->logger();
+			if ( class_exists( 'WC_Logger' ) ) {
+				$this->log = new WC_Logger();
+			} else {
+				$this->log = $woocommerce->logger();
+			}
 		}
 	}
 
@@ -206,8 +210,6 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function submit_order( $order ) {
-		global $woocommerce;
-
 		// Sets the xml.
 		$xml = $this->generate_order_xml( $order );
 

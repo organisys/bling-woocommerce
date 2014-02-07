@@ -78,7 +78,6 @@ function wcbling_gateway_load() {
 	add_filter( 'woocommerce_integrations', 'wcbling_add_integration' );
 
 	// Include the Bling classes.
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-simplexml.php';
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-integration.php';
 
 	if ( is_admin() ) {
