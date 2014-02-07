@@ -11,9 +11,6 @@
  * Domain Path: /languages/
  */
 
-define( 'WOO_BLING_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WOO_BLING_URL', plugin_dir_url( __FILE__ ) );
-
 /**
  * WooCommerce fallback notice.
  */
@@ -54,8 +51,8 @@ function wcbling_gateway_load() {
 	add_filter( 'woocommerce_integrations', 'wcbling_add_integration' );
 
 	// Include the Bling classes.
-	require_once WOO_BLING_PATH . 'includes/class-wc-bling-simplexml.php';
-	require_once WOO_BLING_PATH . 'includes/class-wc-bling-integration.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-simplexml.php';
+	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-integration.php';
 }
 
 add_action( 'plugins_loaded', 'wcbling_gateway_load', 0 );
