@@ -108,6 +108,8 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return string        Order xml.
 	 */
 	protected function generate_order_xml( $order ) {
+		global $woocommerce;
+
 		// Added custom SimpleXML class.
 		require_once plugin_dir_path( __FILE__ ) . 'class-wc-bling-simplexml.php';
 
@@ -141,14 +143,20 @@ class WC_Bling_Integration extends WC_Integration {
 		$client->addChild( 'email', $order->billing_email );
 
 		// Shipping.
-		if ( $order->get_shipping() ) {
+		if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
+			$shipping_total = $order->get_total_shipping();
+		} else {
+			$shipping_total = $order->get_shipping();
+		}
+
+		if ( $shipping_total ) {
 			$shipping = $xml->addChild( 'transporte' );
 			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
 			$shipping->addChild( 'tipo_frete', 'R' );
 			// $shipping->addChild( 'servico_correios', '' );
 
-			if ( ( $order->get_shipping() + $order->get_shipping_tax() ) > 0 ) {
-				$xml->addChild( 'vlr_frete', number_format( $order->get_shipping() + $order->get_shipping_tax(), 2, '.', '' ) );
+			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
+				$xml->addChild( 'vlr_frete', number_format( $shipping_total + $order->get_shipping_tax(), 2, '.', '' ) );
 			}
 		}
 
@@ -249,8 +257,6 @@ class WC_Bling_Integration extends WC_Integration {
 					$this->log->add( 'bling', 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
 				}
 			}
-
-			error_log( print_r( $response_data, true ) );
 
 			// Save the order number.
 			if ( isset( $response_data->retorno->pedidos[0]->pedido->numero ) ) {
