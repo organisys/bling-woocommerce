@@ -101,6 +101,19 @@ class WC_Bling_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Only numbers.
+	 *
+	 * @param  mixed $value Value to extract.
+	 *
+	 * @return int          Number.
+	 */
+	protected function only_numbers( $value ) {
+		$fixed = preg_replace( '([^0-9])', '', $value );
+
+		return $fixed;
+	}
+
+	/**
 	 * Generate the Bling order xml.
 	 *
 	 * @param object  $order Order data.
@@ -123,16 +136,23 @@ class WC_Bling_Integration extends WC_Integration {
 		// Client.
 		$client = $xml->addChild( 'cliente' );
 		$client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
-		// $client->addChild( 'tipo_pessoa', '' );
-		// $client->addChild( 'cpf_cnpj', '' );
-		// $client->addChild( 'ie', '' );
-		// $client->addChild( 'rg', '' );
+		$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
+		$client->addChild( 'tipo_pessoa', $persontype );
+		if ( 'F' == $persontype ) {
+			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );
+			$client->addChild( 'rg', $this->only_numbers( $order->billing_rg ) );
+		} else {
+			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cnpj ) );
+			$client->addChild( 'ie', $this->only_numbers( $order->billing_ie ) );
+		}
 		$client->addChild( 'endereco' )->addCData( $order->billing_address_1 );
-		// $client->addChild( 'numero', '' );
+		$client->addChild( 'numero', $order->billing_number );
 		if ( ! empty( $order->billing_address_2 ) ) {
 			$client->addChild( 'complemento' )->addCData( $order->billing_address_2 );
 		}
-		// $client->addChild( 'bairro', '' );
+		if ( $order->billing_neighborhood ) {
+			$client->addChild( 'bairro' )->addCData( $order->billing_neighborhood );
+		}
 		$cep = $this->format_zipcode( $order->billing_postcode );
 		if ( $cep ) {
 			$client->addChild( 'cep', $cep );

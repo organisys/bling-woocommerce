@@ -19,6 +19,13 @@ function wcbling_woocommerce_fallback_notice() {
 }
 
 /**
+ * WooCommerce Extra Checkout Fields for Brazil is missing notice.
+ */
+function wcbling_wc_ecfb_is_missing_notice() {
+	echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'WooCommerce Extra Checkout Fields for Brazil', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
+}
+
+/**
  * Adds custom settings url in plugins page.
  *
  * @param  array $links Default links.
@@ -53,6 +60,13 @@ function wcbling_gateway_load() {
 	// Checks with WooCommerce is installed.
 	if ( ! class_exists( 'WC_Integration' ) ) {
 		add_action( 'admin_notices', 'wcbling_woocommerce_fallback_notice' );
+
+		return;
+	}
+
+	// Checks with WooCommerce Extra Checkout Fields for Brazil is installed.
+	if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+		add_action( 'admin_notices', 'wcbling_wc_ecfb_is_missing_notice' );
 
 		return;
 	}
