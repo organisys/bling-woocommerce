@@ -11,92 +11,157 @@
  * Domain Path: /languages/
  */
 
-/**
- * WooCommerce fallback notice.
- */
-function wcbling_woocommerce_fallback_notice() {
-	echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
 }
 
-/**
- * WooCommerce Extra Checkout Fields for Brazil is missing notice.
- */
-function wcbling_wc_ecfb_is_missing_notice() {
-	echo '<div class="error"><p>' . sprintf( __( 'Bling WooCommerce depends on the last version of %s to work!', 'bling-woocommerce' ), '<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'WooCommerce Extra Checkout Fields for Brazil', 'bling-woocommerce' ) . '</a>' ) . '</p></div>';
-}
+if ( ! class_exists( 'WC_Bling' ) ) :
 
 /**
- * Adds custom settings url in plugins page.
- *
- * @param  array $links Default links.
- *
- * @return array        Default links and settings link.
+ * WooCommerce Bling main class.
  */
-function wcbling_action_links( $links ) {
-	global $woocommerce;
+class WC_Bling {
 
-	if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
-		$admin_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=bling' );
-	} else {
-		$admin_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=bling' );
-	}
+	/**
+	 * Plugin version.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var   string
+	 */
+	const VERSION = '1.0.0';
 
-	$settings = array(
-		'settings' => sprintf(
-			'<a href="%s">%s</a>',
-			$admin_url,
-			__( 'Settings', 'bling-woocommerce' )
-		)
-	);
+	/**
+	 * Integration id.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var   string
+	 */
+	protected static $gateway_id = 'bling';
 
-	return array_merge( $settings, $links );
-}
+	/**
+	 * Plugin slug.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var   string
+	 */
+	protected static $plugin_slug = 'bling-woocommerce';
 
-/**
- * Load functions.
- */
-function wcbling_gateway_load() {
+	/**
+	 * Instance of this class.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var   object
+	 */
+	protected static $instance = null;
 
-	// Checks with WooCommerce is installed.
-	if ( ! class_exists( 'WC_Integration' ) ) {
-		add_action( 'admin_notices', 'wcbling_woocommerce_fallback_notice' );
+	/**
+	 * Initialize the plugin public actions.
+	 *
+	 * @since  1.0.0
+	 */
+	private function __construct() {
+		// Load plugin text domain
+		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
-		return;
-	}
+		// Checks with WooCommerce and WooCommerce Extra Checkout Fields for Brazil is installed.
+		if ( class_exists( 'WC_Integration' ) && class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+			// Include the WC_Bling_Integration class.
+			include_once 'includes/class-wc-bling-integration.php';
 
-	// Checks with WooCommerce Extra Checkout Fields for Brazil is installed.
-	if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-		add_action( 'admin_notices', 'wcbling_wc_ecfb_is_missing_notice' );
-
-		return;
+			add_filter( 'woocommerce_integrations', array( $this, 'add_integration' ) );
+		} else {
+			add_action( 'admin_notices', array( $this, 'dependencies_notice' ) );
+		}
 	}
 
 	/**
-	 * Load textdomain.
-	 */
-	load_plugin_textdomain( 'bling-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-
-	/**
-	 * Add a new integration to WooCommerce.
+	 * Return an instance of this class.
 	 *
-	 * @param  array $integrations WooCommerce payment methods.
+	 * @since  1.0.0
 	 *
-	 * @return array               Payment methods with Bling.
+	 * @return object A single instance of this class.
 	 */
-	function wcbling_add_integration( $integrations ) {
-		$integrations[] = 'WC_Bling_Integration';
+	public static function get_instance() {
+		// If the single instance hasn't been set, set it now.
+		if ( null == self::$instance ) {
+			self::$instance = new self;
+		}
 
-		return $integrations;
+		return self::$instance;
 	}
 
-	add_filter( 'woocommerce_integrations', 'wcbling_add_integration' );
+	/**
+	 * Return the plugin slug.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return string Plugin slug variable.
+	 */
+	public static function get_plugin_slug() {
+		return self::$plugin_slug;
+	}
 
-	// Include the Bling classes.
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-bling-integration.php';
+	/**
+	 * Return the gateway id/slug.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return string Gateway id/slug variable.
+	 */
+	public static function get_gateway_id() {
+		return self::$gateway_id;
+	}
 
-	if ( is_admin() ) {
-		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wcbling_action_links' );
+	/**
+	 * Load the plugin text domain for translation.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return void
+	 */
+	public function load_plugin_textdomain() {
+		$domain = self::$plugin_slug;
+		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
+
+		load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
+		load_plugin_textdomain( $domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/**
+	 * Add the Bling integration to WooCommerce.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  array $methods WooCommerce integrations.
+	 *
+	 * @return array          Bling integration.
+	 */
+	public function add_integration( $methods ) {
+		$methods[] = 'WC_Bling_Integration';
+
+		return $methods;
+	}
+
+	/**
+	 * Dependencies notice.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return string
+	 */
+	public function dependencies_notice() {
+		echo '<div class="error"><p>' . sprintf(
+			__( 'Bling WooCommerce depends on the last version of the %s and the %s to work!', self::$plugin_slug ),
+			'<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', self::$plugin_slug ) . '</a>',
+			'<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'WooCommerce Extra Checkout Fields for Brazil', self::$plugin_slug ) . '</a>'
+		) . '</p></div>';
 	}
 }
 
-add_action( 'plugins_loaded', 'wcbling_gateway_load', 0 );
+add_action( 'plugins_loaded', array( 'WC_Bling', 'get_instance' ), 0 );
+
+endif;
