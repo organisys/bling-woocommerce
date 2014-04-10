@@ -41,15 +41,6 @@ class WC_Bling {
 	protected static $gateway_id = 'bling';
 
 	/**
-	 * Plugin slug.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var   string
-	 */
-	protected static $plugin_slug = 'bling-woocommerce';
-
-	/**
 	 * Instance of this class.
 	 *
 	 * @since 1.0.0
@@ -95,17 +86,6 @@ class WC_Bling {
 	}
 
 	/**
-	 * Return the plugin slug.
-	 *
-	 * @since  1.0.0
-	 *
-	 * @return string Plugin slug variable.
-	 */
-	public static function get_plugin_slug() {
-		return self::$plugin_slug;
-	}
-
-	/**
 	 * Return the gateway id/slug.
 	 *
 	 * @since  1.0.0
@@ -124,7 +104,7 @@ class WC_Bling {
 	 * @return void
 	 */
 	public function load_plugin_textdomain() {
-		$domain = self::$plugin_slug;
+		$domain = 'bling-woocommerce';
 		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 
 		load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
@@ -155,9 +135,9 @@ class WC_Bling {
 	 */
 	public function dependencies_notice() {
 		echo '<div class="error"><p>' . sprintf(
-			__( 'Bling WooCommerce depends on the last version of the %s and the %s to work!', self::$plugin_slug ),
-			'<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', self::$plugin_slug ) . '</a>',
-			'<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'WooCommerce Extra Checkout Fields for Brazil', self::$plugin_slug ) . '</a>'
+			__( 'Bling WooCommerce depends on the last version of the %s and the %s to work!', 'bling-woocommerce' ),
+			'<a href="http://wordpress.org/extend/plugins/woocommerce/">' . __( 'WooCommerce', 'bling-woocommerce' ) . '</a>',
+			'<a href="http://wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/">' . __( 'WooCommerce Extra Checkout Fields for Brazil', 'bling-woocommerce' ) . '</a>'
 		) . '</p></div>';
 	}
 }
