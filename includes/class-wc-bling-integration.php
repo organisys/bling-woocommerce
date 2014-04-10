@@ -3,8 +3,6 @@
  * WC Bling Integration Class.
  *
  * Create integration with the Bling.
- *
- * @since 1.0.0
  */
 class WC_Bling_Integration extends WC_Integration {
 
@@ -347,7 +345,9 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return string Bling notice.
 	 */
 	public function shop_order_notices() {
-		if ( 'shop_order' === get_current_screen()->id && isset( $_GET['post'] ) ) {
+		$screen = get_current_screen();
+
+		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
 			$order_id = intval( $_GET['post'] );
 			$message = get_post_meta( $order_id, '_bling_notices', true );
 

@@ -25,25 +25,12 @@ class WC_Bling {
 	/**
 	 * Plugin version.
 	 *
-	 * @since 1.0.0
-	 *
 	 * @var   string
 	 */
 	const VERSION = '1.0.0';
 
 	/**
-	 * Integration id.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var   string
-	 */
-	protected static $gateway_id = 'bling';
-
-	/**
 	 * Instance of this class.
-	 *
-	 * @since 1.0.0
 	 *
 	 * @var   object
 	 */
@@ -51,8 +38,6 @@ class WC_Bling {
 
 	/**
 	 * Initialize the plugin public actions.
-	 *
-	 * @since  1.0.0
 	 */
 	private function __construct() {
 		// Load plugin text domain
@@ -72,8 +57,6 @@ class WC_Bling {
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since  1.0.0
-	 *
 	 * @return object A single instance of this class.
 	 */
 	public static function get_instance() {
@@ -86,20 +69,7 @@ class WC_Bling {
 	}
 
 	/**
-	 * Return the gateway id/slug.
-	 *
-	 * @since  1.0.0
-	 *
-	 * @return string Gateway id/slug variable.
-	 */
-	public static function get_gateway_id() {
-		return self::$gateway_id;
-	}
-
-	/**
 	 * Load the plugin text domain for translation.
-	 *
-	 * @since  1.0.0
 	 *
 	 * @return void
 	 */
@@ -114,8 +84,6 @@ class WC_Bling {
 	/**
 	 * Add the Bling integration to WooCommerce.
 	 *
-	 * @since  1.0.0
-	 *
 	 * @param  array $methods WooCommerce integrations.
 	 *
 	 * @return array          Bling integration.
@@ -128,8 +96,6 @@ class WC_Bling {
 
 	/**
 	 * Dependencies notice.
-	 *
-	 * @since  1.0.0
 	 *
 	 * @return string
 	 */
