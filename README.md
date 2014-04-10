@@ -2,8 +2,8 @@
 **Contributors:** bling, claudiosanches  
 **Tags:** management, stock, finances, ERP, NFe  
 **Requires at least:** 3.5  
-**Tested up to:** 3.7.1  
-**Stable tag:** 1.0.0  
+**Tested up to:** 3.9  
+**Stable tag:** 1.0.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -113,15 +113,19 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 ## Changelog ##
 
+### 1.0.1 - 09/05/2014 ###
+
+* Correção do método que formata o CEP.
+
 ### 1.0.0 ###
 
 * Initial release.
 
 ## Upgrade Notice ##
 
-### 1.0.0 ###
+### 1.0.1 ###
 
-* Initial release.
+* Correção do método que formata o CEP.
 
 ## License ##
 
