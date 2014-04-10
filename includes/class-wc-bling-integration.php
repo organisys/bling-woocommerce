@@ -21,7 +21,7 @@ class WC_Bling_Integration extends WC_Integration {
 		$this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'bling-woocommerce' );
 
 		// API.
-		$this->api_url = 'https://bling.com.br/Api/v2/pedido/json/';
+		$this->api_url = 'https://bling.com.br/Api/v2/';
 
 		// Load the settings.
 		$this->init_form_fields();
@@ -250,7 +250,7 @@ class WC_Bling_Integration extends WC_Integration {
 		// Sets the url.
 		$url = esc_url_raw( sprintf(
 			"%s?apikey=%s&xml=%s",
-			$this->api_url,
+			$this->api_url . 'pedido/json/',
 			$this->access_key,
 			urlencode( $xml )
 		) );
