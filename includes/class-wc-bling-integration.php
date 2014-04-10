@@ -94,7 +94,7 @@ class WC_Bling_Integration extends WC_Integration {
 			$str_2 = substr( $zipcode, 2, 3 );
 			$str_3 = substr( $zipcode, 5, 3 );
 
-			return $str_1 . '.' . $str_2 . '-' . $str_2;
+			return $str_1 . '.' . $str_2 . '-' . $str_3;
 		}
 
 		return false;
