@@ -88,7 +88,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 ### How work the Bling? ###
 
-* Learn more [Sobre o Bling](http://bling.com.br/home.php?p=tour).
+* Learn more [Sobre o Bling](https://www.bling.com.br/tour/).
 * Or go to [FAQ do Bling](http://bling.com.br/faq.php).
 
 ### FAQ (pt_BR): ###
@@ -103,7 +103,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 ### Como funciona o Bling? ###
 
 * Saiba mais em [Sobre o Bling](http://bling.com.br/home.php?p=tour).
-* Ou acesse a [FAQ do Bling](http://bling.com.br/faq.php).
+* Ou acesse a [FAQ do Bling](http://bling.com.br/perguntas-frequentes).
 
 ## Screenshots ##
 
