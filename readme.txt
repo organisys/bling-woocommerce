@@ -13,15 +13,22 @@ O Bling é um sistema online que permite a você controlar as finanças, estoque
 
 ### Description (en): ###
 
-The Bling is an online system that integrates several tools that can assist in solving the major problems in managing a small business.
-Works only with Real and address in Brazil.
-Learn more making a [Tour the Bling](http://www.bling.com.br/home.php?p=tour).
+The Bling is an online system that integrates several tools that can assist in solving the major problems in managing a small business.  
+Works only with Real and address in Brazil.  
+Learn more making a [Tour the Bling](https://www.bling.com.br/tour/).
 
 ### Descrição (pt_BR): ###
 
-O Bling é um sistema online que integra diversas ferramentas que podem auxiliar na solução dos principais problemas de gestão em uma pequena empresa.
-Funciona apenas com Real e com endereço no Brasil.
-Saiba mais fazendo uma [Tour no Bling](http://www.bling.com.br/home.php?p=tour).
+O Bling é um sistema online que integra diversas ferramentas que podem auxiliar na solução dos principais problemas de gestão em uma pequena empresa.  
+Funciona apenas com Real e com endereço no Brasil.  
+
+== Com o Bling você pode ==
+
+* Controle financeiro: Controle de contas a receber e a pagar, caixa, bancos e fluxo de caixa.
+* Vendas: Pedidos de venda e Propostas comerciais. Cadastramento, envio por e-mail e acompanhamento de propostas em andamento.
+* Nota fiscal eletrônica (NFe): Emissão de nota fiscal eletrônica. Assinatura digital, transmissão para o SEFAZ e emissão de DANFE.
+
+Saiba mais fazendo uma [Tour no Bling](https://www.bling.com.br/tour/).
 
 = Instalação: =
 
@@ -88,7 +95,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 = How work the Bling? =
 
-* Learn more [Sobre o Bling](http://bling.com.br/home.php?p=tour).
+* Learn more [Sobre o Bling](https://www.bling.com.br/tour/).
 * Or go to [FAQ do Bling](http://bling.com.br/faq.php).
 
 ### FAQ (pt_BR): ###
@@ -102,7 +109,7 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 = Como funciona o Bling? =
 
-* Saiba mais em [Sobre o Bling](http://bling.com.br/home.php?p=tour).
+* Saiba mais em [Sobre o Bling](https://www.bling.com.br/tour/).
 * Ou acesse a [FAQ do Bling](http://bling.com.br/faq.php).
 
 == Screenshots ==
