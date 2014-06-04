@@ -194,7 +194,9 @@ class WC_Bling_Integration extends WC_Integration {
 
 					// Get product data.
 					$product = $order->get_product_from_item( $order_item );
-
+					if(!$product){
+						continue;
+					}	
 					// Product with attrs.
 					$item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
 					if ( $meta = $item_meta->display( true, true ) ) {
@@ -295,10 +297,10 @@ class WC_Bling_Integration extends WC_Integration {
 			if ( isset( $response_data->retorno->erros ) ) {
 				$errors = array();
 				foreach ( $response_data->retorno->erros as $error ) {
-					if ( isset( $error->msg ) ) {
-						$errors[] = (string) $error->msg;
+					if ( isset( $error->erro->msg ) ) {
+						$errors[] = (string) $error->erro->msg;
 					} else {
-						$msg = (array) $error;
+						$msg = (array) $error->erro;
 						$errors[] = (string) current( $msg );
 					}
 				}
