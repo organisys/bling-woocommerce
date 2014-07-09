@@ -129,7 +129,7 @@ class WC_Bling_Integration extends WC_Integration {
 
 		// Order data.
 		$xml->addChild( 'data', date( 'd/m/Y', strtotime( $order->order_date ) ) );
-		$xml->addChild( 'numero', ltrim( $order->get_order_number(), '#' ) );
+		$xml->addChild( 'numero_loja', ltrim( $order->get_order_number(), '#' ) );
 
 		// Client.
 		$client = $xml->addChild( 'cliente' );
@@ -223,10 +223,16 @@ class WC_Bling_Integration extends WC_Integration {
 			$item->addChild( 'vlr_unit', $order->get_total_tax() );
 		}
 
+
+		$nLoja		= 'Nº Pedido Loja: ' . ltrim( $order->get_order_number(), '#' );
+		$obsCliente	= '';
+		
 		// Customer notes.
 		if ( isset( $order->customer_note ) && ! empty( $order->customer_note ) ) {
-			$xml->addChild( 'obs' )->addCData( sanitize_text_field( $order->customer_note ) );
+			$obsCliente	= ' - Nota do Cliente: ' . sanitize_text_field( $order->customer_note);
 		}
+		
+		$xml->addChild( 'obs',  $nLoja . $obsCliente);
 
 		// Filter the XML.
 		$xml = apply_filters( 'woocommerce_bling_order_xml', $xml, $order );
