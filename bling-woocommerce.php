@@ -25,14 +25,14 @@ class WC_Bling {
 	/**
 	 * Plugin version.
 	 *
-	 * @var   string
+	 * @var string
 	 */
 	const VERSION = '1.0.1';
 
 	/**
 	 * Instance of this class.
 	 *
-	 * @var   object
+	 * @var object
 	 */
 	protected static $instance = null;
 
@@ -45,8 +45,7 @@ class WC_Bling {
 
 		// Checks with WooCommerce and WooCommerce Extra Checkout Fields for Brazil is installed.
 		if ( class_exists( 'WC_Integration' ) && class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-			// Include the WC_Bling_Integration class.
-			include_once 'includes/class-wc-bling-integration.php';
+			$this->includes();
 
 			add_filter( 'woocommerce_integrations', array( $this, 'add_integration' ) );
 		} else {
@@ -79,6 +78,15 @@ class WC_Bling {
 
 		load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
 		load_plugin_textdomain( $domain, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/**
+	 * Includes.
+	 *
+	 * @return void
+	 */
+	private function includes() {
+		include_once 'includes/class-wc-bling-integration.php';
 	}
 
 	/**
