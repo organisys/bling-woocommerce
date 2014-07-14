@@ -27,22 +27,37 @@ class WC_Bling_API {
 		$this->integration = $integration;
 	}
 
-	protected function do_request( $endpoint, $method = 'POST', $data = array(), $headers = array() ) {
+	/**
+	 * Do requests.
+	 *
+	 * @param string $endpoint API endpoint
+	 * @param string $method   Request method.
+	 * @param array  $xml      Request XML data.
+	 * @param array  $headers  Request headers.
+	 *
+	 * @return bool|SimpleXMLElement
+	 */
+	protected function do_request( $endpoint, $method = 'POST', $xml = '', $headers = array() ) {
+		$url = $this->api_url . $endpoint;
+
 		$params = array(
 			'method'    => $method,
 			'sslverify' => false,
 			'timeout'   => 60
 		);
 
-		if ( 'POST' == $method && ! empty( $data ) ) {
-			$params['body'] = $data;
+		if ( 'POST' === $method && '' !== $xml ) {
+			$params['body'] = array(
+				'apikey' => $this->integration->access_key,
+				'xml'    => rawurlencode( $xml )
+			);
 		}
 
 		if ( ! empty( $headers ) ) {
 			$params['headers'] = $headers;
 		} elseif ( empty( $headers ) && 'POST' == $method ) {
-			$params['headers'] = array( 
-				'Content-Type' => 'application/xml;charset=UTF-8' 
+			$params['headers'] = array(
+				'Content-Type' => 'application/xml;charset=UTF-8'
 			);
 		}
 
