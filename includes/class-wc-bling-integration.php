@@ -124,12 +124,14 @@ class WC_Bling_Integration extends WC_Integration {
 		// Added custom SimpleXML class.
 		require_once plugin_dir_path( __FILE__ ) . 'class-wc-bling-simplexml.php';
 
+		$order_number = ltrim( $order->get_order_number(), '#' );
+
 		// Creates the payment xml.
 		$xml = new WC_Bling_SimpleXML( '<?xml version="1.0" encoding="utf-8"?><pedido></pedido>' );
 
 		// Order data.
 		$xml->addChild( 'data', date( 'd/m/Y', strtotime( $order->order_date ) ) );
-		$xml->addChild( 'numero_loja', ltrim( $order->get_order_number(), '#' ) );
+		$xml->addChild( 'numero_loja', $order_number );
 
 		// Client.
 		$client = $xml->addChild( 'cliente' );
@@ -196,7 +198,7 @@ class WC_Bling_Integration extends WC_Integration {
 					$product = $order->get_product_from_item( $order_item );
 					if(!$product){
 						continue;
-					}	
+					}
 					// Product with attrs.
 					$item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
 					if ( $meta = $item_meta->display( true, true ) ) {
@@ -225,16 +227,13 @@ class WC_Bling_Integration extends WC_Integration {
 			$item->addChild( 'vlr_unit', $order->get_total_tax() );
 		}
 
-
-		$nLoja		= 'Nº Pedido Loja: ' . ltrim( $order->get_order_number(), '#' );
-		$obsCliente	= '';
-		
-		// Customer notes.
+		// Notes.
+		$note = __( 'Order number:', 'bling-woocommerce' ) . ' ' . $order_number;
 		if ( isset( $order->customer_note ) && ! empty( $order->customer_note ) ) {
-			$obsCliente	= ' - Nota do Cliente: ' . sanitize_text_field( $order->customer_note);
+			$note .= ' - ' . __( 'Client note:', 'bling-woocommerce' ) . ' ' . sanitize_text_field( $order->customer_note );
 		}
-		
-		$xml->addChild( 'obs',  $nLoja . $obsCliente);
+
+		$xml->addChild( 'obs',  $note );
 
 		// Filter the XML.
 		$xml = apply_filters( 'woocommerce_bling_order_xml', $xml, $order );
