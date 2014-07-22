@@ -137,13 +137,15 @@ class WC_Bling_Integration extends WC_Integration {
 		$client = $xml->addChild( 'cliente' );
 		$client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
 		$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
-		$client->addChild( 'tipo_pessoa', $persontype );
+		
 		if ( 'F' == $persontype ) {
 			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );
 			$client->addChild( 'rg', $this->only_numbers( $order->billing_rg ) );
+			$client->addChild( 'tipo_pessoa', 'F');
 		} else {
 			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cnpj ) );
 			$client->addChild( 'ie', $this->only_numbers( $order->billing_ie ) );
+			$client->addChild( 'tipo_pessoa', 'J');
 		}
 		$client->addChild( 'endereco' )->addCData( $order->billing_address_1 );
 		$client->addChild( 'numero', $order->billing_number );
