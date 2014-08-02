@@ -110,6 +110,29 @@ class WC_Bling_API {
 	}
 
 	/**
+	 * Get errors.
+	 *
+	 * @param  array $data
+	 *
+	 * @return array
+	 */
+	public function get_errors( $data ) {
+		$errors = array();
+
+		foreach ( $data as $error ) {
+			if ( isset( $error['erro']['msg'] ) ) {
+				$errors[] = sanitize_text_field( $error['erro']['msg'] );
+			} elseif ( isset( $error['msg'] ) ) {
+				$errors[] = sanitize_text_field( $error['msg'] );
+			} else {
+				$errors[] = sanitize_text_field( $error );
+			}
+		}
+
+		return $errors;
+	}
+
+	/**
 	 * Generate the Bling order xml.
 	 *
 	 * @param object  $order Order data.

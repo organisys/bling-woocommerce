@@ -114,15 +114,7 @@ class WC_Bling_Integration extends WC_Integration {
 
 		// Save the order error.
 		if ( isset( $data['retorno']['erros'] ) ) {
-			$errors = array();
-
-			foreach ( $data['retorno']['erros'] as $error ) {
-				if ( isset( $error['erro']['msg'] ) ) {
-					$errors[] = sanitize_text_field( $error['erro']['msg'] );
-				} else {
-					$errors[] = sanitize_text_field( $error['msg'] );
-				}
-			}
+			$errors = $this->api->get_errors( $data['retorno']['erros'] );
 
 			// Sets the error notice.
 			update_post_meta( $order->id, '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
