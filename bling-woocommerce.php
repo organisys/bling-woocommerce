@@ -86,6 +86,8 @@ class WC_Bling {
 	 * @return void
 	 */
 	private function includes() {
+		include_once 'includes/class-wc-bling-simplexml.php';
+		include_once 'includes/class-wc-bling-api.php';
 		include_once 'includes/class-wc-bling-integration.php';
 	}
 

@@ -6,6 +6,8 @@
  */
 class WC_Bling_Integration extends WC_Integration {
 
+
+
 	/**
 	 * Init and hook in the integration.
 	 *
@@ -29,15 +31,6 @@ class WC_Bling_Integration extends WC_Integration {
 		$this->access_key = $this->get_option( 'access_key' );
 		$this->debug      = $this->get_option( 'debug' );
 
-		// Actions.
-		add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
-		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
-		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
-		add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
-
-		// Display notices in shop order admin page.
-		add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
-
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
 			if ( class_exists( 'WC_Logger' ) ) {
@@ -46,6 +39,17 @@ class WC_Bling_Integration extends WC_Integration {
 				$this->log = $woocommerce->logger();
 			}
 		}
+
+		$this->api = new WC_Bling_API( $this );
+
+		// Actions.
+		add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
+		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
+		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
+		add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
+
+		// Display notices in shop order admin page.
+		add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
 	}
 
 	/**
@@ -77,171 +81,6 @@ class WC_Bling_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Format Zip Code.
-	 *
-	 * @param  string $zipcode Zip Code.
-	 *
-	 * @return string          Formated zip code.
-	 */
-	protected function format_zipcode( $zipcode ) {
-		$zipcode = str_replace( array( '.', '-', ',' ), '', trim( $zipcode ) );
-		$len     = strlen( $zipcode );
-
-		if ( 8 == $len ) {
-			$str_1 = substr( $zipcode, 0, 2 );
-			$str_2 = substr( $zipcode, 2, 3 );
-			$str_3 = substr( $zipcode, 5, 3 );
-
-			return $str_1 . '.' . $str_2 . '-' . $str_3;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Only numbers.
-	 *
-	 * @param  mixed $value Value to extract.
-	 *
-	 * @return int          Number.
-	 */
-	protected function only_numbers( $value ) {
-		$fixed = preg_replace( '([^0-9])', '', $value );
-
-		return $fixed;
-	}
-
-	/**
-	 * Generate the Bling order xml.
-	 *
-	 * @param object  $order Order data.
-	 *
-	 * @return string        Order xml.
-	 */
-	protected function generate_order_xml( $order ) {
-		global $woocommerce;
-
-		// Added custom SimpleXML class.
-		require_once plugin_dir_path( __FILE__ ) . 'class-wc-bling-simplexml.php';
-
-		$order_number = ltrim( $order->get_order_number(), '#' );
-
-		// Creates the payment xml.
-		$xml = new WC_Bling_SimpleXML( '<?xml version="1.0" encoding="utf-8"?><pedido></pedido>' );
-
-		// Order data.
-		$xml->addChild( 'data', date( 'd/m/Y', strtotime( $order->order_date ) ) );
-		$xml->addChild( 'numero_loja', $order_number );
-
-		// Client.
-		$client = $xml->addChild( 'cliente' );
-		$client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
-		$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
-		$client->addChild( 'tipo_pessoa', $persontype );
-		if ( 'F' == $persontype ) {
-			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );
-			$client->addChild( 'rg', $this->only_numbers( $order->billing_rg ) );
-		} else {
-			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cnpj ) );
-			$client->addChild( 'ie', $this->only_numbers( $order->billing_ie ) );
-		}
-		$client->addChild( 'endereco' )->addCData( $order->billing_address_1 );
-		$client->addChild( 'numero', $order->billing_number );
-		if ( ! empty( $order->billing_address_2 ) ) {
-			$client->addChild( 'complemento' )->addCData( $order->billing_address_2 );
-		}
-		if ( $order->billing_neighborhood ) {
-			$client->addChild( 'bairro' )->addCData( $order->billing_neighborhood );
-		}
-		$cep = $this->format_zipcode( $order->billing_postcode );
-		if ( $cep ) {
-			$client->addChild( 'cep', $cep );
-		}
-		$client->addChild( 'cidade' )->addCData( $order->billing_city );
-		$client->addChild( 'uf', $order->billing_state );
-		$client->addChild( 'fone', $order->billing_phone );
-		$client->addChild( 'email', $order->billing_email );
-
-		// Shipping.
-		if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
-			$shipping_total = $order->get_total_shipping();
-		} else {
-			$shipping_total = $order->get_shipping();
-		}
-
-		if ( $shipping_total ) {
-			$shipping = $xml->addChild( 'transporte' );
-			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
-			$shipping->addChild( 'tipo_frete', 'R' );
-			// $shipping->addChild( 'servico_correios', '' );
-
-			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
-				$xml->addChild( 'vlr_frete', number_format( $shipping_total + $order->get_shipping_tax(), 2, '.', '' ) );
-			}
-		}
-
-		// Discount.
-		if ( $order->get_order_discount() > 0 ) {
-			$xml->addChild( 'vlr_desconto', $order->get_order_discount() );
-		}
-
-		// Items.
-		$items = $xml->addChild( 'itens' );
-
-		// Cart Contents.
-		if ( sizeof( $order->get_items() ) > 0 ) {
-			foreach ( $order->get_items() as $order_item ) {
-				if ( $order_item['qty'] ) {
-					$item_name = $order_item['name'];
-
-					// Get product data.
-					$product = $order->get_product_from_item( $order_item );
-					if(!$product){
-						continue;
-					}
-					// Product with attrs.
-					$item_meta = new WC_Order_Item_Meta( $order_item['item_meta'] );
-					if ( $meta = $item_meta->display( true, true ) ) {
-						$item_name .= ' - ' . $meta;
-					}
-
-					// Item data.
-					$item = $items->addChild( 'item' );
-					if ( $product->get_sku() ) {
-						$item->addChild( 'codigo', $product->get_sku() );
-					}
-					$item->addChild( 'descricao' )->addCData( sanitize_text_field( $item_name ) );
-					$item->addChild( 'un', 'un' );
-					$item->addChild( 'qtde', $order_item['qty'] );
-					$item->addChild( 'vlr_unit', $order->get_item_total( $order_item, false ) );
-				}
-			}
-		}
-
-		// Extras Amount.
-		if ( $order->get_total_tax() > 0 ) {
-			$item = $items->addChild( 'item' );
-			$item->addChild( 'descricao' )->addCData( __( 'Tax', 'bling-woocommerce' ) );
-			$item->addChild( 'un', 'un' );
-			$item->addChild( 'qtde', 1 );
-			$item->addChild( 'vlr_unit', $order->get_total_tax() );
-		}
-
-		// Notes.
-		$note = __( 'Order number:', 'bling-woocommerce' ) . ' ' . $order_number;
-		if ( isset( $order->customer_note ) && ! empty( $order->customer_note ) ) {
-			$note .= ' - ' . __( 'Client note:', 'bling-woocommerce' ) . ' ' . sanitize_text_field( $order->customer_note );
-		}
-
-		$xml->addChild( 'obs',  $note );
-
-		// Filter the XML.
-		$xml = apply_filters( 'woocommerce_bling_order_xml', $xml, $order );
-
-		return $xml->asXML();
-	}
-
-	/**
 	 * Submit the order to Bling.
 	 *
 	 * @param  object $order WC_Order object.
@@ -249,73 +88,47 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function submit_order( $order ) {
-		// Sets the xml.
-		$xml = $this->generate_order_xml( $order );
+		// Submit the order via API.
+		$data = $this->api->submit_order( $order );
 
-		// Sets the url.
-		$url = esc_url_raw( sprintf(
-			"%s?apikey=%s&xml=%s",
-			$this->api_url . 'pedido/json/',
-			$this->access_key,
-			urlencode( $xml )
-		) );
+		// Save the order number.
+		if ( isset( $data['retorno']['pedidos'][0]['pedido'] ) ) {
+			$order_data = $data['retorno']['pedidos'][0]['pedido'];
+			$number = intval( $order_data['numero'] );
 
-		if ( 'yes' == $this->debug ) {
-			$this->log->add( 'bling', 'Submitting order ' . $order->get_order_number() . ' with the following data: ' . $xml );
+			// Save the bling order number as order meta.
+			update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
+
+			// Sets the success notice.
+			update_post_meta( $order->id, '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
+
+			// Save Order data.
+			update_post_meta( $order->id, '_bling_order_number', $number );
+			update_post_meta( $order->id, '_bling_order_id', intval( $order_data['idPedido'] ) );
+			update_post_meta( $order->id, '_bling_order_tracking', $order_data['codigos_rastreamento'] );
+
+			if ( 'yes' == $this->debug ) {
+				$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
+			}
 		}
 
-		// Get the response.
-		$response = wp_remote_post( $url, array( 'timeout' => 60 ) );
+		// Save the order error.
+		if ( isset( $data['retorno']['erros'] ) ) {
+			$errors = array();
 
-		// Process the response.
-		if ( is_wp_error( $response ) ) {
+			foreach ( $data['retorno']['erros'] as $error ) {
+				if ( isset( $error['erro']['msg'] ) ) {
+					$errors[] = sanitize_text_field( $error['erro']['msg'] );
+				} else {
+					$errors[] = sanitize_text_field( $error['msg'] );
+				}
+			}
+
+			// Sets the error notice.
+			update_post_meta( $order->id, '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
+
 			if ( 'yes' == $this->debug ) {
-				$this->log->add( 'bling', 'An error occurred with WP_Error: ' . $response->get_error_message() );
-			}
-		} else {
-			try {
-				$response_data = json_decode( $response['body'] );
-			} catch ( Exception $e ) {
-				$response_data = '';
-
-				if ( 'yes' == $this->debug ) {
-					$this->log->add( 'bling', 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
-				}
-			}
-
-			// Save the order number.
-			if ( isset( $response_data->retorno->pedidos[0]->pedido->numero ) ) {
-				$number = (string) $response_data->retorno->pedidos[0]->pedido->numero;
-
-				// Save the bling order number as order meta.
-				update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
-
-				// Sets the success notice.
-				update_post_meta( $order->id, '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
-
-				if ( 'yes' == $this->debug ) {
-					$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
-				}
-			}
-
-			// Save the order error.
-			if ( isset( $response_data->retorno->erros ) ) {
-				$errors = array();
-				foreach ( $response_data->retorno->erros as $error ) {
-					if ( isset( $error->erro->msg ) ) {
-						$errors[] = (string) $error->erro->msg;
-					} else {
-						$msg = (array) $error->erro;
-						$errors[] = (string) current( $msg );
-					}
-				}
-
-				// Sets the error notice.
-				update_post_meta( $order->id, '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
-
-				if ( 'yes' == $this->debug ) {
-					$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $response_data->retorno->erros, true ) );
-				}
+				$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $data['retorno']['erros'], true ) );
 			}
 		}
 	}
