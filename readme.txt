@@ -3,7 +3,7 @@ Contributors: bling, claudiosanches
 Tags: management, stock, finances, ERP, NFe
 Requires at least: 3.5
 Tested up to: 3.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,16 +11,10 @@ O Bling é um sistema online que permite a você controlar as finanças, estoque
 
 == Description ==
 
-### Description (en): ###
-
-The Bling is an online system that integrates several tools that can assist in solving the major problems in managing a small business.  
-Works only with Real and address in Brazil.  
-Learn more making a [Tour the Bling](https://www.bling.com.br/tour/).
-
-### Descrição (pt_BR): ###
-
 O Bling é um sistema online que integra diversas ferramentas que podem auxiliar na solução dos principais problemas de gestão em uma pequena empresa.  
-Funciona apenas com Real e com endereço no Brasil.  
+Funciona apenas com Real e com endereço no Brasil.
+
+[youtube https://www.youtube.com/watch?v=1RrW1R4wWPI]
 
 == Com o Bling você pode ==
 
@@ -48,25 +42,6 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Installation ==
 
-### Instalation guid (en): ###
-
-= Install =
-
-* Upload the plugin to the wp-content/plugins folder, or install using the WordPress plugin installer;
-* Activate the plugin.
-
-= Bling Configuration =
-
-* Create an account on [Bling](http://bling.com.br/);
-* Generate an **Access Key** on [Bling - API Para Web Services](http://bling.com.br/configuracoes.api.web.services.php).
-
-= Plugin Configuration =
-
-* In WordPress admin site go to **WooCommerce > Settings > Integration > Bling**;
-* Fill out the option **Access Key** and activate the Bling.
-
-### Guia de instalação (pt_BR): ###
-
 = Instalação =
 
 * Envie os arquivos do plugin para a pasta wp-content/plugins, ou instale usando o instalador de plugins do WordPress;
@@ -83,22 +58,6 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 * Preencha a opção **Chave de Acesso** e ative o Bling.
 
 == Frequently Asked Questions ==
-
-### FAQ (en): ###
-
-= What do I need to use this plugin? =
-
-* Have installed the [WooCommerce](http://wordpress.org/plugins/woocommerce/) plugin.
-* Owning an account on [Bling](http://bling.com.br/).
-* Generate an **[Access Key](http://bling.com.br/configuracoes.api.web.services.php)** in Bling;
-* Configure your store to receive payments in Brazilian Real and only from Brazil.
-
-= How work the Bling? =
-
-* Learn more [Sobre o Bling](https://www.bling.com.br/tour/).
-* Or go to [FAQ do Bling](http://bling.com.br/faq.php).
-
-### FAQ (pt_BR): ###
 
 = O que eu preciso para utilizar este plugin? =
 
