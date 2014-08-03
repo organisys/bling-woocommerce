@@ -154,7 +154,17 @@ class WC_Bling_API {
 		// Client.
 		$client = $xml->addChild( 'cliente' );
 		$client->addChild( 'nome' )->addCData( $order->billing_first_name . ' ' . $order->billing_last_name );
-		$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
+
+		$wcbcf_settings = get_option( 'wcbcf_settings' );
+
+		if ( 2 == $wcbcf_settings['person_type'] ) {
+			$persontype = 'F';
+		} elseif ( 3 == $wcbcf_settings['person_type'] ) {
+			$persontype = 'J';
+		} else {
+			$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
+		}
+
 		$client->addChild( 'tipo_pessoa', $persontype );
 		if ( 'F' == $persontype ) {
 			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );

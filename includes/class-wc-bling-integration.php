@@ -6,8 +6,6 @@
  */
 class WC_Bling_Integration extends WC_Integration {
 
-
-
 	/**
 	 * Init and hook in the integration.
 	 *
