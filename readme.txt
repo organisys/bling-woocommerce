@@ -77,6 +77,12 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Changelog ==
 
+= 1.0.2 - 09/05/2014 =
+
+* Correção do envio dos dados de CPF, CNPJ, RG e IE.
+* Correção da exibição dos erros da API.
+* Correção do campo de número do pedido.
+
 = 1.0.1 - 09/05/2014 =
 
 * Correção do método que formata o CEP.
@@ -87,9 +93,11 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Upgrade Notice ==
 
-= 1.0.1 =
+= 1.0.2 =
 
-* Correção do método que formata o CEP.
+* Correção do envio dos dados de CPF, CNPJ, RG e IE.
+* Correção da exibição dos erros da API.
+* Correção do campo de número do pedido.
 
 == License ==
 
