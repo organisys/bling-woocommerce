@@ -165,7 +165,7 @@ class WC_Bling_API {
 			$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
 		}
 
-		$client->addChild( 'tipo_pessoa', $persontype );
+		$client->addChild( 'tipoPessoa', $persontype );
 		if ( 'F' == $persontype ) {
 			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );
 			$client->addChild( 'rg', $this->only_numbers( $order->billing_rg ) );
