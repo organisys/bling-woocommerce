@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Bling WooCommerce v1.0.0\n"
+"Project-Id-Version: Bling WooCommerce v1.0.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2014-02-07 03:31:20+0000\n"
+"PO-Revision-Date: 2014-08-03 00:37:12+0000\n"
 "Last-Translator: Claudio Sanches <contato@claudiosmweb.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -34,8 +34,8 @@ msgstr "https://github.com/organisys/bling-woocommerce"
 
 #. translators: plugin header field 'Author'
 #: bling-woocommerce.php:0
-#: includes/class-wc-bling-integration.php:20
-#: includes/class-wc-bling-integration.php:322
+#: includes/class-wc-bling-integration.php:18
+#: includes/class-wc-bling-integration.php:165
 #@ bling-woocommerce
 msgid "Bling"
 msgstr "Bling"
@@ -46,29 +46,12 @@ msgstr "Bling"
 msgid "http://bling.com.br/"
 msgstr "http://bling.com.br/"
 
-#. translators: plugin header field 'Version'
-#: bling-woocommerce.php:0
-#@ bling-woocommerce
-msgid "1.0.0"
-msgstr "1.0.0"
-
-#: bling-woocommerce.php:18
-#, php-format
-#@ bling-woocommerce
-msgid "Bling WooCommerce depends on the last version of %s to work!"
-msgstr "Bling WooCommerce depende da última versão do %s para funcionar!"
-
-#: bling-woocommerce.php:18
+#: bling-woocommerce.php:115
 #@ bling-woocommerce
 msgid "WooCommerce"
 msgstr "WooCommerce"
 
-#: bling-woocommerce.php:41
-#@ bling-woocommerce
-msgid "Settings"
-msgstr "Configurações"
-
-#: includes/class-wc-bling-integration.php:21
+#: includes/class-wc-bling-integration.php:19
 #@ bling-woocommerce
 msgid "The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated."
 msgstr "O Bling é um sistema online que permite a você controlar as finanças, estoques e emitir notas fiscais de maneira rápida e descomplicada."
@@ -110,12 +93,12 @@ msgstr "Habilitar log"
 msgid "Log Bling events, such as API requests, inside %s"
 msgstr "Log sobre eventos do Bling, como requisições da API, dentro do arquivo %s"
 
-#: includes/class-wc-bling-integration.php:194
+#: includes/class-wc-bling-api.php:253
 #@ bling-woocommerce
 msgid "Tax"
 msgstr "Taxa"
 
-#: includes/class-wc-bling-integration.php:258
+#: includes/class-wc-bling-integration.php:98
 #@ bling-woocommerce
 msgid "Bling order number"
 msgstr "Número de pedido no Bling"
@@ -126,13 +109,40 @@ msgstr "Número de pedido no Bling"
 msgid "The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.."
 msgstr "O Bling é um sistema online que permite a você controlar as finanças, estoques e emitir notas fiscais de maneira rápida e descomplicada."
 
-#: includes/class-wc-bling-integration.php:306
+#: includes/class-wc-bling-integration.php:147
 #@ bling-woocommerce
 msgid "Send order to the Bling"
 msgstr "Enviar pedido ao Bling"
 
-#: includes/class-wc-bling-integration.php:261
+#: includes/class-wc-bling-integration.php:101
 #@ bling-woocommerce
 msgid "Order sent successfully"
 msgstr "Pedido enviado com sucesso"
+
+#. translators: plugin header field 'Version'
+#: bling-woocommerce.php:0
+#@ bling-woocommerce
+msgid "1.0.2"
+msgstr "1.0.2"
+
+#: bling-woocommerce.php:114
+#, php-format
+#@ bling-woocommerce
+msgid "Bling WooCommerce depends on the last version of the %s and the %s to work!"
+msgstr "Bling WooCommerce depende da última vesão do %s e do %s para funcionar!"
+
+#: bling-woocommerce.php:116
+#@ bling-woocommerce
+msgid "WooCommerce Extra Checkout Fields for Brazil"
+msgstr "WooCommerce Extra Checkout Fields for Brazil"
+
+#: includes/class-wc-bling-api.php:260
+#@ bling-woocommerce
+msgid "Order number:"
+msgstr "Número do pedido:"
+
+#: includes/class-wc-bling-api.php:262
+#@ bling-woocommerce
+msgid "Client note:"
+msgstr "Nota do cliente:"
 
