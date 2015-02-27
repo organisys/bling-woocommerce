@@ -201,7 +201,10 @@ class WC_Bling_API {
 			$shipping = $xml->addChild( 'transporte' );
 			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
 			$shipping->addChild( 'tipo_frete', 'R' );
-			// $shipping->addChild( 'servico_correios', '' );
+
+			if (!empty($order->shipping_methods)) {
+				$shipping->addChild( 'servico_correios')->addCData( $order->shipping_methods);
+			}
 
 			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
 				$xml->addChild( 'vlr_frete', number_format( $shipping_total + $order->get_shipping_tax(), 2, '.', '' ) );
