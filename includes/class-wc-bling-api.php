@@ -190,24 +190,6 @@ class WC_Bling_API {
 		$client->addChild( 'fone', $order->billing_phone );
 		$client->addChild( 'email', $order->billing_email );
 
-		// Shipping.
-		if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
-			$shipping_total = $order->get_total_shipping();
-		} else {
-			$shipping_total = $order->get_shipping();
-		}
-
-		if ( $shipping_total ) {
-			$shipping = $xml->addChild( 'transporte' );
-			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
-			$shipping->addChild( 'tipo_frete', 'R' );
-			// $shipping->addChild( 'servico_correios', '' );
-
-			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
-				$xml->addChild( 'vlr_frete', number_format( $shipping_total + $order->get_shipping_tax(), 2, '.', '' ) );
-			}
-		}
-
 		// Discount.
 		if ( $order->get_order_discount() > 0 ) {
 			$xml->addChild( 'vlr_desconto', $order->get_order_discount() );
@@ -215,6 +197,7 @@ class WC_Bling_API {
 
 		// Items.
 		$items = $xml->addChild( 'itens' );
+		$total_weight = 0;
 
 		// Cart Contents.
 		if ( sizeof( $order->get_items() ) > 0 ) {
@@ -234,6 +217,8 @@ class WC_Bling_API {
 						$item_name .= ' - ' . $meta;
 					}
 
+					$total_weight += (float) $product->get_weight();
+					
 					// Item data.
 					$item = $items->addChild( 'item' );
 					if ( $product->get_sku() ) {
@@ -247,6 +232,30 @@ class WC_Bling_API {
 			}
 		}
 
+		// Shipping.
+		if ( version_compare( $woocommerce->version, '2.1', '>=' ) ) {
+			$shipping_total = $order->get_total_shipping();
+		} else {
+			$shipping_total = $order->get_shipping();
+		}
+		
+		$shipping = $xml->addChild( 'transporte' );
+		
+		if ( $shipping_total ) {
+			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
+			$shipping->addChild( 'tipo_frete', 'R' );
+				
+			if (!empty($order->shipping_methods)) {
+				$shipping->addChild( 'servico_correios')->addCData( $order->shipping_methods);
+			}
+		
+			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
+				$xml->addChild( 'vlr_frete', number_format( $shipping_total + $order->get_shipping_tax(), 2, '.', '' ) );
+			}
+		}
+		
+		$shipping->addChild( 'peso_bruto', $total_weight );
+		
 		// Extras Amount.
 		if ( $order->get_total_tax() > 0 ) {
 			$item = $items->addChild( 'item' );

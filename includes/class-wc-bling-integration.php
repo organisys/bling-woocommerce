@@ -28,7 +28,7 @@ class WC_Bling_Integration extends WC_Integration {
 		// Define user set variables.
 		$this->access_key = $this->get_option( 'access_key' );
 		$this->debug      = $this->get_option( 'debug' );
-
+		
 		// Active logs.
 		if ( 'yes' == $this->debug ) {
 			if ( class_exists( 'WC_Logger' ) ) {
