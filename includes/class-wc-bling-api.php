@@ -239,8 +239,9 @@ class WC_Bling_API {
 			$shipping_total = $order->get_shipping();
 		}
 		
+		$shipping = $xml->addChild( 'transporte' );
+		
 		if ( $shipping_total ) {
-			$shipping = $xml->addChild( 'transporte' );
 			$shipping->addChild( 'transportadora' )->addCData( $order->shipping_method_title );
 			$shipping->addChild( 'tipo_frete', 'R' );
 				
