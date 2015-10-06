@@ -83,6 +83,7 @@ class WC_Bling_API {
 
 		if ( 'POST' === $method && '' !== $xml ) {
 			$url = add_query_arg( array(
+				//'gerarnfe' => 'true',
 				'apikey' => $this->integration->access_key,
 				'xml'    => rawurlencode( $xml )
 			), $url );
@@ -165,7 +166,7 @@ class WC_Bling_API {
 			$persontype = ( 1 == $order->billing_persontype ) ? 'F' : 'J';
 		}
 
-		$client->addChild( 'tipoPessoa', $persontype );
+		$client->addChild( 'tipo_pessoa', $persontype );
 		if ( 'F' == $persontype ) {
 			$client->addChild( 'cpf_cnpj', $this->only_numbers( $order->billing_cpf ) );
 			$client->addChild( 'rg', $this->only_numbers( $order->billing_rg ) );
@@ -294,6 +295,92 @@ class WC_Bling_API {
 			} catch ( Exception $e ) {
 				if ( 'yes' == $this->integration->debug ) {
 					$this->integration->add( 'bling', 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Generate the Bling product xml.
+	 *
+	 * @param  object $product Product data.
+	 *
+	 * @return string          Product xml.
+	 */
+	protected function get_product_xml( $product ) {
+		// Creates the payment xml.
+		$xml = new WC_Bling_SimpleXML( '<?xml version="1.0" encoding="utf-8"?><produto></produto>' );
+
+		// Product data.
+		$xml->addChild( 'codigo', $product->get_sku() );
+		$xml->addChild( 'descricao', $product->get_title() );
+		$xml->addChild( 'descricaoComplementar', strip_tags( $product->get_categories() ) );
+		$xml->addChild( 'un', 'un' );
+		$xml->addChild( 'vlr_unit', $product->get_price() );
+		//$xml->addChild( 'preco_custo', '' );
+		$xml->addChild( 'peso_bruto', $product->get_weight() );
+		$xml->addChild( 'peso_liq', $product->get_weight() );
+		$xml->addChild( 'class_fiscal', $product->bling_ncm );
+		//$xml->addChild( 'origem', '' );
+		$xml->addChild( 'estoque', $product->get_stock_quantity() );
+		//$xml->addChild( 'gtin', '' );
+		//$xml->addChild( 'gtinEmbalagem', '' );
+
+		if ( $product->length ) {
+			$xml->addChild( 'profundidade', $product->length );
+		}
+
+		if ( $product->width ) {
+			$xml->addChild( 'largura', $product->width );
+		}
+
+		if ( $product->height ) {
+			$xml->addChild( 'altura', $product->height );
+		}
+		
+		//$xml->addChild( 'estoqueMinimo', '' );
+		//$xml->addChild( 'estoqueMaximo', '' );
+
+		// Filter the XML.
+		$xml = apply_filters( 'woocommerce_bling_product_xml', $xml, $product );
+
+		return $xml->asXML();
+	}
+
+	/**
+	 * Submit the product to Bling.
+	 *
+	 * @param  WC_Product $order Product data.
+	 *
+	 * @return array             Response data.
+	 */
+	public function submit_product( $product ) {
+		$data = array();
+		$xml  = $this->get_product_xml( $product );
+
+		if ( 'yes' == $this->integration->debug ) {
+			$this->integration->log->add( 'bling' , 'Submitting product ' . $product->get_sku() . ' with the following data: ' . $xml );
+		}
+
+		// Set endpoint for update or insert
+		$product_code = $product->bling_code;
+		$endpoint     = 'produto/json/';
+
+		if ( ! empty( $product_code ) ) {
+			$endpoint = "produto/${product_code}/json/";
+		}
+
+		// Get the response.
+		$response = $this->do_request( $endpoint , 'POST' , $xml );
+
+		if ( $response ) {
+			try {
+				$data = json_decode( $response['body'] , true );
+			} catch ( Exception $e ) {
+				if ( 'yes' == $this->integration->debug ) {
+					$this->integration->add( 'bling' , 'Error while parsing the response: ' . print_r( $e->getMessage(), true ) );
 				}
 			}
 		}
