@@ -228,7 +228,7 @@ class WC_Bling_Integration extends WC_Integration {
 		$screen = get_current_screen();
 
 		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
-			$order   = wc_get_order( intval( $_GET['post'] ) )
+			$order   = wc_get_order( intval( $_GET['post'] ) );
 			$message = $order->get_meta( '_bling_notices' );
 
 			if ( is_array( $message ) ) {
