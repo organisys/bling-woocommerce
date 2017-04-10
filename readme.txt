@@ -3,7 +3,7 @@ Contributors: bling, claudiosanches
 Tags: management, stock, finances, ERP, NFe
 Requires at least: 4.5
 Tested up to: 4.7
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ Você pode esclarecer suas dúvidas usando:
 
 * A nossa sessão de [FAQ](http://wordpress.org/extend/plugins/bling-woocommerce/faq/).
 * Criando um tópico no [fórum do GitHub](https://github.com/organisys/bling-woocommerce/issues).
-* Criando um tópico no [fórum de ajuda do WordPress](http://wordpress.org/support/plugin/bling-woocommerce) (apenas em inglês).
+* Criando um tópico no [fórum de suporte no WordPress](http://wordpress.org/support/plugin/bling-woocommerce).
 
 = Coloborar =
 
@@ -77,14 +77,10 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Changelog ==
 
+= 1.0.4 - 2017/04/10 =
+
+* Corrigido os dados dos produtos de pedidos enviados ao Bling.
+
 = 1.0.3 - 2017/04/10 =
 
 * Adicionado suporte ao WooCommerce 3.0.
-
-== Upgrade Notice ==
-
-= 1.0.2 =
-
-* Correção do envio dos dados de CPF, CNPJ, RG e IE.
-* Correção da exibição dos erros da API.
-* Correção do campo de número do pedido.
