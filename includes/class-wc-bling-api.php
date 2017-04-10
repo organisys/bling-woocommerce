@@ -350,7 +350,7 @@ class WC_Bling_API {
 		// Cart Contents.
 		if ( sizeof( $order->get_items() ) > 0 ) {
 			foreach ( $order->get_items() as $order_item ) {
-				if ( 0 < $item->get_quantity() ) {
+				if ( 0 < $order_item->get_quantity() ) {
 					// Get product data.
 					$product = $order_item->get_product();
 					if ( ! $product ) {
@@ -364,8 +364,8 @@ class WC_Bling_API {
 					}
 					$item->addChild( 'descricao' )->addCData( str_replace( '&ndash;', '-', $order_item->get_name() ) );
 					$item->addChild( 'un', 'un' );
-					$item->addChild( 'qtde', $order_item['qty'] );
-					$item->addChild( 'vlr_unit', $order_item->get_total() );
+					$item->addChild( 'qtde', $order_item->get_quantity() );
+					$item->addChild( 'vlr_unit', number_format( $order->get_item_total( $order_item, false ), 2, '.', '' ) );
 				}
 			}
 		}
