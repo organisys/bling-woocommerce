@@ -1,9 +1,9 @@
 === Bling WooCommerce ===
 Contributors: bling, claudiosanches
 Tags: management, stock, finances, ERP, NFe
-Requires at least: 3.5
-Tested up to: 4.0
-Stable tag: 1.0.2
+Requires at least: 4.5
+Tested up to: 4.7
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,19 +77,9 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 
 == Changelog ==
 
-= 1.0.2 - 09/05/2014 =
+= 1.0.3 - 2017/04/10 =
 
-* Correção do envio dos dados de CPF, CNPJ, RG e IE.
-* Correção da exibição dos erros da API.
-* Correção do campo de número do pedido.
-
-= 1.0.1 - 09/05/2014 =
-
-* Correção do método que formata o CEP.
-
-= 1.0.0 =
-
-* Initial release.
+* Adicionado suporte ao WooCommerce 3.0.
 
 == Upgrade Notice ==
 
@@ -98,11 +88,3 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 * Correção do envio dos dados de CPF, CNPJ, RG e IE.
 * Correção da exibição dos erros da API.
 * Correção do campo de número do pedido.
-
-== License ==
-
-Bling WooCommerce is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-Bling WooCommerce is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with Bling WooCommerce. If not, see <http://www.gnu.org/licenses/>.

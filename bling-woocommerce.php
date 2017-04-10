@@ -5,7 +5,7 @@
  * Description: The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated..
  * Author: Bling
  * Author URI: http://bling.com.br/
- * Version: 1.0.2
+ * Version: 1.0.3
  * License: GPLv2 or later
  * Text Domain: bling-woocommerce
  * Domain Path: /languages/
@@ -27,7 +27,7 @@ class WC_Bling {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * Instance of this class.
