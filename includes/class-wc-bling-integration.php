@@ -44,10 +44,14 @@ class WC_Bling_Integration extends WC_Integration {
 		add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
 		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
-		add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
 
-		// Display notices in shop order admin page.
-		add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
+		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '3.0', '>=' ) ) {
+			add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
+			add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
+		} else {
+			add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_legacy_order' ) );
+			add_action( 'admin_notices', array( $this, 'legacy_shop_order_notices' ) );
+		}
 	}
 
 	/**
@@ -79,13 +83,11 @@ class WC_Bling_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Submit the order to Bling.
+	 * Legacy - Submit the order to Bling.
 	 *
-	 * @param  object $order WC_Order object.
-	 *
-	 * @return void
+	 * @param object $order WC_Order object.
 	 */
-	public function submit_order( $order ) {
+	public function submit_legacy_order( $order ) {
 		// Submit the order via API.
 		$data = $this->api->submit_order( $order );
 
@@ -124,6 +126,51 @@ class WC_Bling_Integration extends WC_Integration {
 	}
 
 	/**
+	 * Submit the order to Bling.
+	 *
+	 * @param object $order WC_Order object.
+	 */
+	public function submit_order( $order ) {
+		// Submit the order via API.
+		$data = $this->api->submit_order( $order );
+
+		// Save the order number.
+		if ( isset( $data['retorno']['pedidos'][0]['pedido'] ) ) {
+			$order_data = $data['retorno']['pedidos'][0]['pedido'];
+			$number     = intval( $order_data['numero'] );
+
+			// Save the bling order number as order meta.
+			$order->update_meta_data( __( 'Bling order number', 'bling-woocommerce' ), $number );
+
+			// Sets the success notice.
+			$order->update_meta_data( '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
+
+			// Save Order data.
+			$order->update_meta_data( '_bling_order_number', $number );
+			$order->update_meta_data( '_bling_order_id', intval( $order_data['idPedido'] ) );
+			$order->update_meta_data( '_bling_order_tracking', $order_data['codigos_rastreamento'] );
+			$order->save();
+
+			if ( 'yes' == $this->debug ) {
+				$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
+			}
+		}
+
+		// Save the order error.
+		if ( isset( $data['retorno']['erros'] ) ) {
+			$errors = $this->api->get_errors( $data['retorno']['erros'] );
+
+			// Sets the error notice.
+			$order->update_meta_data( '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
+			$order->save();
+
+			if ( 'yes' == $this->debug ) {
+				$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $data['retorno']['erros'], true ) );
+			}
+		}
+	}
+
+	/**
 	 * Process order and submit to Bling.
 	 *
 	 * @param int $order_id Order ID.
@@ -133,7 +180,11 @@ class WC_Bling_Integration extends WC_Integration {
 	public function process_order( $order_id ) {
 		$order = new WC_Order( $order_id );
 
-		$this->submit_order( $order );
+		if ( method_exists( $order, 'get_id' ) ) {
+			$this->submit_order( $order );
+		} else {
+			$this->submit_legacy_order( $order );
+		}
 	}
 
 	/**
@@ -150,11 +201,11 @@ class WC_Bling_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Display notices in shop order admin page.
+	 * Legacy - Display notices in shop order admin page.
 	 *
 	 * @return string Bling notice.
 	 */
-	public function shop_order_notices() {
+	public function legacy_shop_order_notices() {
 		$screen = get_current_screen();
 
 		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
@@ -164,6 +215,26 @@ class WC_Bling_Integration extends WC_Integration {
 			if ( is_array( $message ) ) {
 				echo '<div class="' . esc_attr( $message['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $message['message'] ) . '.</p></div>';
 				delete_post_meta( $order_id, '_bling_notices' );
+			}
+		}
+	}
+
+	/**
+	 * Display notices in shop order admin page.
+	 *
+	 * @return string Bling notice.
+	 */
+	public function shop_order_notices() {
+		$screen = get_current_screen();
+
+		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
+			$order   = wc_get_order( intval( $_GET['post'] ) )
+			$message = $order->get_meta( '_bling_notices' );
+
+			if ( is_array( $message ) ) {
+				echo '<div class="' . esc_attr( $message['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $message['message'] ) . '.</p></div>';
+				$order->delete_meta_data( '_bling_notices' );
+				$order->save();
 			}
 		}
 	}

@@ -118,6 +118,6 @@ class WC_Bling {
 	}
 }
 
-add_action( 'plugins_loaded', array( 'WC_Bling', 'get_instance' ), 0 );
+add_action( 'plugins_loaded', array( 'WC_Bling', 'get_instance' ) );
 
 endif;
