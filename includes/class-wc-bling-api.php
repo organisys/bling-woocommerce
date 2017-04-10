@@ -403,7 +403,7 @@ class WC_Bling_API {
 	public function submit_order( $order ) {
 		$data = array();
 
-		if ( method_exists( $order, 'get_id' ) )
+		if ( method_exists( $order, 'get_id' ) ) {
 			$xml = $this->get_order_xml( $order );
 		} else {
 			$xml = $this->get_legacy_order_xml( $order );
