@@ -327,7 +327,8 @@ class WC_Bling_API {
 		$client->addChild( 'email', $order->get_billing_email() );
 
 		// Shipping.
-		if ( 0 < $order->get_shipping_total() ) {
+		$shipping_total = $order->get_shipping_total() + $order->get_shipping_tax();
+		if ( 0 < $shipping_total ) {
 			$shipping_methods = array();
 
 			foreach ( $order->get_items( 'shipping' ) as $shipping_data ) {
@@ -338,10 +339,7 @@ class WC_Bling_API {
 			$shipping->addChild( 'transportadora' )->addCData( implode( ', ', $shipping_methods ) );
 			$shipping->addChild( 'tipo_frete', 'R' );
 			// $shipping->addChild( 'servico_correios', '' );
-
-			if ( ( $shipping_total + $order->get_shipping_tax() ) > 0 ) {
-				$xml->addChild( 'vlr_frete', number_format( $order->get_shipping_total() + $order->get_shipping_tax(), 2, '.', '' ) );
-			}
+			$xml->addChild( 'vlr_frete', number_format( $shipping_total, 2, '.', '' ) );
 		}
 
 		// Items.
@@ -408,6 +406,8 @@ class WC_Bling_API {
 		} else {
 			$xml = $this->get_legacy_order_xml( $order );
 		}
+
+		error_log( print_r( $xml, true ) );
 
 		if ( 'yes' == $this->integration->debug ) {
 			$this->integration->log->add( 'bling', 'Submitting order ' . $order->get_order_number() . ' with the following data: ' . $xml );
