@@ -3,7 +3,7 @@ Contributors: bling, claudiosanches
 Tags: management, stock, finances, ERP, NFe
 Requires at least: 4.5
 Tested up to: 4.7
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,10 @@ Você pode contribuir com código-fonte em nossa página no [GitHub](https://git
 1. Plugin Settings.
 
 == Changelog ==
+
+= 1.0.4 - 2017/04/26 =
+
+* Corrigido valor do frete que estava faltando no WooCommerce 3.0.
 
 = 1.0.4 - 2017/04/10 =
 
