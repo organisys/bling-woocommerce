@@ -3,7 +3,7 @@
  * Plugin Name: Bling WooCommerce
  * Plugin URI: https://github.com/organisys/bling-woocommerce
  * Description: The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated..
- * Author: Bling
+ * Author: Bling, Agência resultate
  * Author URI: http://bling.com.br/
  * Version: 1.0.5
  * License: GPLv2 or later
