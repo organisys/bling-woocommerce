@@ -13,161 +13,64 @@ class WC_Bling_Integration extends WC_Integration {
 	 */
 	public function __construct() {
 		global $woocommerce;
-
+		$this->settings = new WC_Bling_Settings();
 		$this->id                 = 'bling';
 		$this->method_title       = __( 'Bling', 'bling-woocommerce' );
-		$this->method_description = __( 'The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated.', 'bling-woocommerce' );
-
-		// API.
-		$this->api_url = 'https://bling.com.br/Api/v2/';
-
+		$this->method_description = __( 'O Bling é um software de gestão empresarial, ERP para a micro e pequena empresa.', 'bling-woocommerce' );
 		// Load the settings.
-		$this->init_form_fields();
+		$this->form_fields = $this->settings->get_fields();
 		$this->init_settings();
-
 		// Define user set variables.
-		$this->access_key = $this->get_option( 'access_key' );
-		$this->debug      = $this->get_option( 'debug' );
-
-		// Active logs.
-		if ( 'yes' == $this->debug ) {
-			if ( class_exists( 'WC_Logger' ) ) {
-				$this->log = new WC_Logger();
-			} else {
-				$this->log = $woocommerce->logger();
-			}
-		}
-
-		$this->api = new WC_Bling_API( $this );
-
-		// Actions.
-		add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
-		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
-		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
-
-		if ( defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '3.0', '>=' ) ) {
-			add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_order' ) );
-			add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
-		} else {
-			add_action( 'woocommerce_order_action_bling_sync', array( $this, 'submit_legacy_order' ) );
-			add_action( 'admin_notices', array( $this, 'legacy_shop_order_notices' ) );
-		}
+		define( 'BLING_WOOCOMMERCE_DEBUG', $this->get_option( 'debug' ) );
+		$this->access_key  = $this->get_option( 'access_key' );
+		$this->sendnfe     = $this->get_option( 'sendnfe' );
+		$this->transmitnfe = $this->get_option( 'transmitnfe' );
+		$this->sendnfce    = $this->get_option( 'sendnfce' );
+		$this->transmitnfce = $this->get_option( 'transmitnfce' );
+		$this->api = new WC_Bling_API( $this->access_key );
+		$this->add_wc_bling_filters_callback();
+		$this->add_wc_bling_actions_callback();
 	}
 
 	/**
-	 * Initialise Gateway Settings Form Fields.
+	 * Add methods as callback to woocommerce filters
 	 *
 	 * @return void
 	 */
-	public function init_form_fields() {
-		$this->form_fields = array(
-			'access_key' => array(
-				'title'       => __( 'Access Key', 'bling-woocommerce' ),
-				'type'        => 'text',
-				'description' => sprintf( __( 'Please enter your Bling Access Key. This is needed to integration works. Is possible generate a new Access Key %s.', 'bling-woocommerce' ), '<a href="http://bling.com.br/configuracoes.api.web.services.php">' . __( 'here', 'bling-woocommerce' ) . '</a>' ),
-				'default'     => ''
-			),
-			'testing' => array(
-				'title'       => __( 'Testing', 'bling-woocommerce' ),
-				'type'        => 'title',
-				'description' => ''
-			),
-			'debug' => array(
-				'title'       => __( 'Debug Log', 'bling-woocommerce' ),
-				'type'        => 'checkbox',
-				'label'       => __( 'Enable logging', 'bling-woocommerce' ),
-				'default'     => 'no',
-				'description' => sprintf( __( 'Log Bling events, such as API requests, inside %s', 'bling-woocommerce' ), '<code>woocommerce/logs/bling-' . sanitize_file_name( wp_hash( 'bling' ) ) . '.txt</code>' )
-			)
-		);
+	private function add_wc_bling_filters_callback() {
+		//Filters
+		add_filter( 'woocommerce_order_actions', array( $this, 'order_action' ) );
+		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_shop_order_bling_columns' ) );
 	}
 
 	/**
-	 * Legacy - Submit the order to Bling.
+	 * Add methods as callback to woocommerce actions
 	 *
-	 * @param object $order WC_Order object.
+	 * @return void
 	 */
-	public function submit_legacy_order( $order ) {
-		// Submit the order via API.
-		$data = $this->api->submit_order( $order );
+	private function add_wc_bling_actions_callback() {
+		// Actions.
+		add_action( 'woocommerce_update_options_integration_bling', array( $this, 'process_admin_options' ) );
+		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order' ) );
+		add_action( 'woocommerce_order_action_bling_nfce', array( $this, 'sync_nfce' ) );
+		add_action( 'woocommerce_order_action_bling_nfe', array( $this, 'sync_nfe' ) );
+		add_action( 'woocommerce_order_action_bling_sync', array( $this, 'sync_order' ) );
+		add_action( 'woocommerce_order_action_bling_transmit_nf', array( $this, 'transmit_nf' ) );
+		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'show_bling_status_value' ) );
 
-		// Save the order number.
-		if ( isset( $data['retorno']['pedidos'][0]['pedido'] ) ) {
-			$order_data = $data['retorno']['pedidos'][0]['pedido'];
-			$number = intval( $order_data['numero'] );
+		add_action( 'save_post', array($this, 'sync_product_bling') );
 
-			// Save the bling order number as order meta.
-			update_post_meta( $order->id, __( 'Bling order number', 'bling-woocommerce' ), $number );
-
-			// Sets the success notice.
-			update_post_meta( $order->id, '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
-
-			// Save Order data.
-			update_post_meta( $order->id, '_bling_order_number', $number );
-			update_post_meta( $order->id, '_bling_order_id', intval( $order_data['idPedido'] ) );
-			update_post_meta( $order->id, '_bling_order_tracking', $order_data['codigos_rastreamento'] );
-
-			if ( 'yes' == $this->debug ) {
-				$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
+		if ( 'yes' == $this->sendnfe ) {
+			add_action( 'woocommerce_checkout_update_order_meta',  array( $this, 'sync_nfe' ) );
+			if( 'yes' == $this->transmitnfe ) {
+				add_action( 'after_sync_nfe', array($this, 'transmit_nf') );
 			}
 		}
-
-		// Save the order error.
-		if ( isset( $data['retorno']['erros'] ) ) {
-			$errors = $this->api->get_errors( $data['retorno']['erros'] );
-
-			// Sets the error notice.
-			update_post_meta( $order->id, '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
-
-			if ( 'yes' == $this->debug ) {
-				$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $data['retorno']['erros'], true ) );
-			}
-		}
-	}
-
-	/**
-	 * Submit the order to Bling.
-	 *
-	 * @param object $order WC_Order object.
-	 */
-	public function submit_order( $order ) {
-		// Submit the order via API.
-		$data = $this->api->submit_order( $order );
-
-		// Save the order number.
-		if ( isset( $data['retorno']['pedidos'][0]['pedido'] ) ) {
-			$order_data = $data['retorno']['pedidos'][0]['pedido'];
-			$number     = intval( $order_data['numero'] );
-
-			// Save the bling order number as order meta.
-			$order->update_meta_data( __( 'Bling order number', 'bling-woocommerce' ), $number );
-
-			// Sets the success notice.
-			$order->update_meta_data( '_bling_notices', array( 'status' => 'updated', 'message' => __( 'Order sent successfully', 'bling-woocommerce' ) ) );
-
-			// Save Order data.
-			$order->update_meta_data( '_bling_order_number', $number );
-			$order->update_meta_data( '_bling_order_id', intval( $order_data['idPedido'] ) );
-			$order->update_meta_data( '_bling_order_tracking', $order_data['codigos_rastreamento'] );
-			$order->save();
-
-			if ( 'yes' == $this->debug ) {
-				$this->log->add( 'bling', 'Order created with success! The order ID is: ' . $number );
-			}
+		if ( 'yes' == $this->sendnfce ) {
+			add_action( 'woocommerce_checkout_update_order_meta',  array( $this, 'sync_nfce' ) );
 		}
 
-		// Save the order error.
-		if ( isset( $data['retorno']['erros'] ) ) {
-			$errors = $this->api->get_errors( $data['retorno']['erros'] );
-
-			// Sets the error notice.
-			$order->update_meta_data( '_bling_notices', array( 'status' => 'error', 'message' => implode( ', ', $errors ) ) );
-			$order->save();
-
-			if ( 'yes' == $this->debug ) {
-				$this->log->add( 'bling', 'Failed to generate the order: ' . print_r( $data['retorno']['erros'], true ) );
-			}
-		}
+		add_action( 'admin_notices', array( $this, 'shop_order_notices' ) );
 	}
 
 	/**
@@ -179,12 +82,18 @@ class WC_Bling_Integration extends WC_Integration {
 	 */
 	public function process_order( $order_id ) {
 		$order = new WC_Order( $order_id );
+		$this->sync_order( $order );
+	}
 
-		if ( method_exists( $order, 'get_id' ) ) {
-			$this->submit_order( $order );
-		} else {
-			$this->submit_legacy_order( $order );
-		}
+	/**
+	 * Submit the order to Bling.
+	 *
+	 * @param object $order WC_Order object.
+	 */
+	public function sync_order( $order ) {
+		$order = is_array($order) ? $order : wc_get_order($order);
+		$bling_order = new WC_Bling_Order( $order, $this->api );
+		$bling_order->submit();
 	}
 
 	/**
@@ -195,28 +104,59 @@ class WC_Bling_Integration extends WC_Integration {
 	 * @return array          New Bling order action.
 	 */
 	public function order_action( $actions ) {
-		$actions['bling_sync'] = __( 'Send order to the Bling', 'bling-woocommerce' );
+		$actions['bling_sync'] = __( 'Enviar pedido para o Bling', 'bling-woocommerce' );
+		$actions['bling_nfce'] = __( 'Reenviar NFCE do pedido no Bling', 'bling-woocommerce' );
+		$actions['bling_nfe'] = __( 'Reenviar NFE do pedido no Bling', 'bling-woocommerce' );
+		$actions['bling_transmit_nf'] = __( 'Transmitir para SEFAZ via Bling', 'bling-woocommerce' );
 
 		return $actions;
 	}
 
 	/**
-	 * Legacy - Display notices in shop order admin page.
+	 * Syncronize NFCE from the order to Bling.
 	 *
-	 * @return string Bling notice.
+	 * @param object $order WC_Order object.
 	 */
-	public function legacy_shop_order_notices() {
-		$screen = get_current_screen();
+	public function sync_nfce( $order ) {
+		$order = is_array($order) ? $order : wc_get_order($order);
+		$bling_nfce = new WC_Bling_NFCE( $order, $this->api );
+		$bling_nfce->submit();
+	}
 
-		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
-			$order_id = intval( $_GET['post'] );
-			$message = get_post_meta( $order_id, '_bling_notices', true );
+	/**
+	 * Syncronize NFE from the order to Bling.
+	 *
+	 * @param object $order WC_Order object.
+	 */
+	public function sync_nfe( $order ) {
+		$order = is_array($order) ? $order : wc_get_order($order);
+		$bling_nfe = new WC_Bling_NFE( $order, $this->api );
+		$bling_nfe->submit();
+	}
 
-			if ( is_array( $message ) ) {
-				echo '<div class="' . esc_attr( $message['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $message['message'] ) . '.</p></div>';
-				delete_post_meta( $order_id, '_bling_notices' );
-			}
+	/**
+	 * Transmit NFE to SEFAZ via API Bling.
+	 *
+	 * @param object $order WC_Order object.
+	 */
+	public function transmit_nf($order) {
+		$order = is_array($order) ? $order : wc_get_order($order);
+		$bling_nfe = new WC_Bling_NFE( $order, $this->api );
+		$bling_nfe->transmit();
+	}
+
+	/**
+	 * Hook after save product.
+	 *
+	 * @return array Bling product returned.
+	 */
+	public function sync_product_bling( $post_id ) {
+		if ( ( get_post_type( $post_id ) !== 'product' ) || (get_post_status($post_id) == 'auto-draft') ) {
+			return;
 		}
+		$product = wc_get_product( $post_id );
+		$bling_product = new WC_Bling_Product($product, $post_id, $this->api);
+		$bling_product->sycronize();
 	}
 
 	/**
@@ -227,15 +167,39 @@ class WC_Bling_Integration extends WC_Integration {
 	public function shop_order_notices() {
 		$screen = get_current_screen();
 
-		if ( 'shop_order' === $screen->id && isset( $_GET['post'] ) ) {
-			$order   = wc_get_order( intval( $_GET['post'] ) );
-			$message = $order->get_meta( '_bling_notices' );
+		if ( ( 'shop_order' === $screen->id || 'product' === $screen->id ) && isset( $_GET['post'] ) ) {
+			$post_id =  intval($_GET['post']);
+			$bling_message = get_post_meta($post_id, '_bling_notices') ? : NULL ;
 
-			if ( is_array( $message ) ) {
-				echo '<div class="' . esc_attr( $message['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $message['message'] ) . '.</p></div>';
-				$order->delete_meta_data( '_bling_notices' );
-				$order->save();
+			if ( isset( $bling_message[0] ) ) {
+				echo '<div class="' . esc_attr( $bling_message[0]['status'] ) . '"><p><strong>' . __( 'Bling', 'bling-woocommerce' ) . ':</strong> ' . esc_attr( $bling_message[0]['message'] ) . '.</p></div>';
+				delete_post_meta($post_id, '_bling_notices');
 			}
 		}
 	}
+
+	/**
+	 * Display bling status in shop order admin page.
+	 *
+	 * @return array Bling orders columns.
+	 */
+	public function add_shop_order_bling_columns( $columns ) {
+		return array_merge( $columns, array( 'status_bling' => 'Status Bling' ) );
+	}
+
+	/**
+	 * Display value bling status in shop order admin page.
+	 *
+	 * @return string Bling status value.
+	 */
+	public function show_bling_status_value( $columns ) {
+		global $the_order;
+		$bling_nfe = new WC_Bling_NFE( $the_order, $this->api );
+		switch ( $columns ) {
+			case 'status_bling' :
+				echo $bling_nfe->get_status();
+			break;
+		}
+	}
+
 }

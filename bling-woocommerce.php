@@ -3,7 +3,7 @@
  * Plugin Name: Bling WooCommerce
  * Plugin URI: https://github.com/organisys/bling-woocommerce
  * Description: The Bling is an online system that allows you to control the finances, inventory and issue invoices quickly and uncomplicated..
- * Author: Bling
+ * Author: Bling, Agência resultate
  * Author URI: http://bling.com.br/
  * Version: 1.0.5
  * License: GPLv2 or later
@@ -16,7 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'WC_Bling' ) ) :
-
+/* Set constant path to the plugin directory. */
+define( 'BLING_WOOCOMMERCE_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 /**
  * WooCommerce Bling main class.
  */
@@ -40,6 +41,7 @@ class WC_Bling {
 	 * Initialize the plugin public actions.
 	 */
 	private function __construct() {
+
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
@@ -86,7 +88,16 @@ class WC_Bling {
 	 * @return void
 	 */
 	private function includes() {
+		include_once 'admin/class-wc-bling-settings.php';
+
+		include_once 'includes/interface-wc-bling-integracao.php';
 		include_once 'includes/class-wc-bling-simplexml.php';
+		include_once 'includes/class-wc-bling-helper.php';
+		include_once 'includes/class-abstract-wc-bling-base-order.php';
+		include_once 'includes/class-wc-bling-order.php';
+		include_once 'includes/class-wc-bling-nfe.php';
+		include_once 'includes/class-wc-bling-nfce.php';
+		include_once 'includes/class-wc-bling-product.php';
 		include_once 'includes/class-wc-bling-api.php';
 		include_once 'includes/class-wc-bling-integration.php';
 	}
